@@ -35,7 +35,7 @@ for d in wanted_dirs:
 		mkdir_p("../data/"+d+"/div_2D"+"/z")
 		mkdir_p("../data/"+d+"/slices")
 
-mkdir_p("../data/mask")
+mkdir_p("../data/mask/normalized")
 mkdir_p("../data/raw")
 
 
