@@ -4,6 +4,8 @@ import nibabel as nib
 import sys
 
 import re
+from copy import deepcopy
+import image_functions as imf
 
 
 #img = nib.load("datos/004/tka004_lesion_mask.nii.gz")
@@ -39,7 +41,7 @@ def std_data(data,valor_min=0,valor_max=1):
 	for i in range(len_1):
 		for j in range(len_2):
 			for k in range(len_3):
-				data[i][j][k] = (data[i][j][k] - (min_pre - valor_min)) * (valor_max-valor_min) / (max_pre-min_pre)
+				data[i][j][k] = (float(data[i][j][k]) - (min_pre - valor_min)) * (valor_max-valor_min) / (max_pre-min_pre)
 
 ind=0
 def getImgType(filename):
@@ -79,9 +81,9 @@ for image in images:
 		print("i'm trying...")
 		img = nib.load("../data/raw/" + dir_name + "/" + image)
 		print("try finished")
-
-		data = img.get_data()
-		std_data(data)
+		data_tmp = img.get_data()
+		data = imf.OurImage(data_tmp)
+		std_data(data.data)
 		img = nib.Nifti1Image(data, np.eye(4))
 		tipo = getImgType(image)
 		#nib.save(img,"../data/tipo/"+image[0:-8]+"_norm.nii.gz")

@@ -10,7 +10,7 @@ class Slice():
 
 class OurImage():
 	def __init__(self, data):
-		self.data = data
+		self.data = np.asarray(data, dtype=np.float32)
 		self.lenx = len(data)
 		self.leny = len(data[0])
 		self.lenz = len(data[0][0])
