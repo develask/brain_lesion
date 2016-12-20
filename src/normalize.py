@@ -39,7 +39,7 @@ def std_data(data,valor_min=0,valor_max=1):
 	for i in range(len_1):
 		for j in range(len_2):
 			for k in range(len_3):
-				data[i][j][k] = (data[i][j][k] - (min_pre - valor_min)) / (max_pre-min_pre) * (valor_max-valor_min)
+				data[i][j][k] = (data[i][j][k] - (min_pre - valor_min)) * (valor_max-valor_min) / (max_pre-min_pre)
 
 ind=0
 def getImgType(filename):

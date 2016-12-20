@@ -5,6 +5,7 @@ import image_functions as imf
 
 class MisImagenes():
 	def __init__(self):
+		self.image = []
 		
 
 
