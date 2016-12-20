@@ -7,6 +7,14 @@ class Slice():
 		self.z = z
 		self.data = data
 		self.tipo = tipo
+	def __iter__(self):
+		for i in range(len(self.data)):
+			for j in range(len(self.data)):
+				yield self.data[i][j]
+
+	def __getitem__(self, num):
+		return self.data[num]
+
 
 class OurImage():
 	def __init__(self, data):
@@ -32,21 +40,21 @@ class OurImage():
 			dato = np.full((dim,dim), self.data[0][0][0])
 			for i in range(dim):
 				for j in range(dim):
-					if 0 <= y-padding+i <= self.leny and 0 <= z-padding+j <= self.lenz:
+					if 0 <= y-padding+i < self.leny and 0 <= z-padding+j < self.lenz:
 						dato[i][j] = self.data[x][y-padding+i][z-padding+j]
 
 		elif tipo == "2dy":
 			dato = np.full((dim,dim), self.data[0][0][0])
 			for i in range(dim):
 				for j in range(dim):
-					if 0 <= x-padding+i <= self.lenx and 0 <= z-padding+j <= self.lenz:
+					if 0 <= x-padding+i < self.lenx and 0 <= z-padding+j < self.lenz:
 						dato[i][j] = self.data[x-padding+i][y][z-padding+j]
 
 		elif tipo == "2dz":
 			dato = np.full((dim,dim), self.data[0][0][0])
 			for i in range(dim):
 				for j in range(dim):
-					if 0 <= x-padding+i <= self.lenx and 0 <= y-padding+j <= self.leny:
+					if 0 <= x-padding+i < self.lenx and 0 <= y-padding+j < self.leny:
 						dato[i][j] = self.data[x-padding+i][y-padding+j][z]
 
 		elif tipo == "3d":
@@ -54,7 +62,7 @@ class OurImage():
 			for i in range(dim):
 				for j in range(dim):
 					for k in range(dim):
-						if 0 <= x-padding+i <= self.lenx and 0 <= y-padding+j <= self.leny and  0 <= z-padding+k <= self.lenz:
+						if 0 <= x-padding+i < self.lenx and 0 <= y-padding+j < self.leny and  0 <= z-padding+k <= self.lenz:
 							dato[i][j][k] = self.data[x-padding+i][y-padding+j][z-padding+k]
 
 		else:
@@ -64,12 +72,30 @@ class OurImage():
 		return(Slice(x,y,z,dato,tipo))
 
 	def get_slices(self, dim, sample_type, step = 1):
-		slices = np.zeros(int((self.lenx+step-1)/step) * int((self.leny+step-1)/step) * int((self.lenz+step-1)/step))
-		indice = 0
-		for i in range(self.lenx, step):
-			for j in range(self.leny, step):
-				for k in range(self.lenz, step):
-					slices[indice] = self.get_slice(i,j,k,dim,sample_type)
-					indice+=1
-		return slices
+		slices = []
+		# for i in range(int((self.lenx+step-1)/step) * int((self.leny+step-1)/step) * int((self.lenz+step-1)/step)):
+		# 	slices.append(None)
+		#slices = np.zeros(int((self.lenx+step-1)/step) * int((self.leny+step-1)/step) * int((self.lenz+step-1)/step))
+		#indice = 0
 
+		# get space value
+		space_val = self.data[0][0][0]
+
+		for i in range(0,self.lenx, step):
+			for j in range(0,self.leny, step):
+				for k in range(0,self.lenz, step):
+					a = self.get_slice(i,j,k,dim,sample_type)
+
+					all_space = True
+					for x in a:
+						# print(type(x))
+						# print(type(space_val))
+						if (x - space_val)*(x - space_val) > 0.001:
+							all_space = False
+							break
+
+					if (all_space == False):
+						slices.append(a)
+						#slices.append(self.get_slice(i,j,k,dim,sample_type))
+					#indice+=1
+		return(slices)

@@ -84,7 +84,7 @@ for image in images:
 		data_tmp = img.get_data()
 		data = imf.OurImage(data_tmp)
 		std_data(data.data)
-		img = nib.Nifti1Image(data, np.eye(4))
+		img = nib.Nifti1Image(data.data, np.eye(4))
 		tipo = getImgType(image)
 		#nib.save(img,"../data/tipo/"+image[0:-8]+"_norm.nii.gz")
 		print("../data/" + tipo + "/" + image[0:-7] + "_norm.nii.gz")
