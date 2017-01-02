@@ -37,9 +37,8 @@ nb_classes = 2
 nb_epoch = 12
 
 # input image dimensions
-inp_dim = 17
+inp_dim = 19
 step = 3
-
 # number of convolutional filters to use
 nb_filters = 32
 # size of pooling area for max pooling
@@ -205,26 +204,40 @@ Y_test = np_utils.to_categorical(y_test, 2)
 
 model = Sequential()
 
-
+print("Input shape to the network:", input_shape)
 model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1],
                         border_mode='valid',
                         input_shape=input_shape))
 model.add(Activation('relu'))
+print("Output shape of 1st convolution:", model.output_shape)
 
 model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1]))
 model.add(Activation('relu'))
+print("Output shape of 2nd convolution:", model.output_shape)
 
-model.add(MaxPooling2D(pool_size=pool_size,dim_ordering='tf'))
+model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1]))
+model.add(Activation('relu'))
+print("Output shape of 3rd convolution:", model.output_shape)
+
+model.add(MaxPooling2D(pool_size=pool_size,))
+print("Output shape after a max pooling:", model.output_shape)
 model.add(Dropout(0.25))
+print("Output shape after dropout:", model.output_shape)
 
 model.add(Flatten())
+print("Output shape after flatten:", model.output_shape)
 model.add(Dense(128))
-
+print("Output shape after (dense 128):", model.output_shape)
 model.add(Activation('relu'))
+print("Output shape after activation(relu):", model.output_shape)
 model.add(Dropout(0.5))
+print("Output shape after dropout(0.5):", model.output_shape)
 
 model.add(Dense(nb_classes))
 model.add(Activation('softmax'))
+print("Output shape after softmax (2 classes):", model.output_shape)
+
+quit()
 
 
 
