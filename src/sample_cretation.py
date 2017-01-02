@@ -71,10 +71,11 @@ class Examples():
 					out = data_out[slices[j].x][slices[j].y][slices[j].z]
 					klasea = ()
 					if out > 0:
-						klasea = (0,1)
+						klasea = 1
+						#klasea = (0,1)
 					else:
-						klasea = (1,0)
-
+						# klasea = (1,0)
+						klasea = 0
 					self.pairs.append((slices[j].data, ######## akaso solo slices[j],
 													   # para pasar info adicional a la NN
 									   klasea))					
