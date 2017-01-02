@@ -64,7 +64,7 @@ class Examples():
 			print(len(slices))
 			for j in range(len(slices)):
 				if output_type == "regression":
-					self.pairs.append((slices[j].data, ######## akaso solo slices[j],
+					self.pairs.append((slices[j], ######## akaso solo slices[j],
 													   # para pasar info adicional a la NN
 									   data_out[slices[j].x][slices[j].y][slices[j].z]))
 				else:
@@ -76,7 +76,7 @@ class Examples():
 					else:
 						# klasea = (1,0)
 						klasea = 0
-					self.pairs.append((slices[j].data, ######## akaso solo slices[j],
+					self.pairs.append((slices[j], ######## akaso solo slices[j],
 													   # para pasar info adicional a la NN
 									   klasea))					
 

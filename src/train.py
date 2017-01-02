@@ -82,14 +82,22 @@ ex.shuffle_exs() ## shuffle the training - test examples
 
 train_test = 0.8 # train test proportion
 i = 0
-train = []
-test = []
+
+X_train = []
+y_train = []
+
+X_test = []
+y_test = []
+
+
 for pair in ex.pairs:
 	if i<0.8*len(ex.pairs):
-		train.append(pair)
+		X_train.append(train[i][0].getData())
+		y_train.append(train[i][1])
 		i += 1
 	else:
-		test.append(pair)
+		X_test.append(test[i][0].getData())
+		y_test.append(test[i][1])
 
 # print("voy a borrar pairs")
 # time.sleep(5)
@@ -101,22 +109,6 @@ for pair in ex.pairs:
 # print("he borrado")
 # time.sleep(5)
 
-X_train = []
-y_train = []
-
-
-for i in range(len(train)):
-	X_train.append(train[i][0])
-	y_train.append(train[i][1])
-
-X_test = []
-y_test = []
-for i in range(len(test)):
-	X_test.append(test[i][0])
-	y_test.append(test[i][1])
-
-del train
-del test # liberate more RAM
 
 X_train = np.asarray(X_train)
 y_train = np.asarray(y_train)
