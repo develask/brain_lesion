@@ -99,6 +99,8 @@ for pair in ex.pairs:
 		X_test.append(pair[0].getData())
 		y_test.append(pair[1])
 
+
+
 # print("voy a borrar pairs")
 # time.sleep(5)
 
@@ -108,6 +110,7 @@ for pair in ex.pairs:
 
 # print("he borrado")
 # time.sleep(5)
+
 
 X_train = np.asarray(X_train)
 y_train = np.asarray(y_train)

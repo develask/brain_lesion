@@ -10,7 +10,7 @@ class Slice():
 		self.tipo = tipo
 
 	def getData(self):
-		self.image.slice_matrix(self.x, self.y, self.z, self.dim, self.tipo);
+		return self.image.slice_matrix(self.x, self.y, self.z, self.dim, self.tipo);
 
 
 class OurImage():
