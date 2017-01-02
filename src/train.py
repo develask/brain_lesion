@@ -49,54 +49,15 @@ kernel_size = (3, 3)
 ex = sc.Examples()
 ex.get_examples("flair","2dx",inp_dim,step = step,output_type="classes")
 
-# import time
-# print("cata la ram")
-# time.sleep(5)
-
-num_pos = 0
-for pair in ex.pairs:
-	if pair[1] == 1:
-		num_pos += 1
-
-r = list(range(0,len(ex.pairs)))
-rdm.shuffle(r)
-
-num_neg = 0
-to_be_removed = [] # list of index that should be removed
-for i in r:
-	if ex.pairs[i][1] == 0:
-		if num_neg < num_pos:
-			num_neg += 1
-		else:
-			to_be_removed.append(i)
-
-to_be_removed = sorted(to_be_removed,reverse=True)
-for i in to_be_removed:
-	ex.remove_elem(i)
+ex.valance(1)
 
 
-print("len of pairs",len(ex.pairs))
+tot = ex.split(0.8)
 
-ex.shuffle_exs() ## shuffle the training - test examples
+X_train,y_train = tot[0]
 
-train_test = 0.8 # train test proportion
-i = 0
+X_test, y_test = tot[1]
 
-X_train = []
-y_train = []
-
-X_test = []
-y_test = []
-
-
-for pair in ex.pairs:
-	if i<0.8*len(ex.pairs):
-		X_train.append(pair[0].getData())
-		y_train.append(pair[1])
-		i += 1
-	else:
-		X_test.append(pair[0].getData())
-		y_test.append(pair[1])
 
 
 
@@ -149,16 +110,13 @@ print("len tests",len(X_test),len(y_test))
 
 # print("number of positive before selection: ",k)
 
-print("len pre reshape",len(X_train))
-print(X_train[0])
+
 
 
 X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim,1)
 # unselect this for 3d images
 #X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim, inp_dim,1)
 
-print("len post reshape",len(X_train))
-print(X_train[0])
 
 X_test = X_test.reshape(X_test.shape[0], inp_dim, inp_dim, 1)
 input_shape = (inp_dim, inp_dim, 1)
