@@ -37,7 +37,7 @@ nb_classes = 2
 nb_epoch = 12
 
 # input image dimensions
-inp_dim = 5
+inp_dim = 17
 step = 3
 
 # number of convolutional filters to use
@@ -214,7 +214,7 @@ model.add(Activation('relu'))
 model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1]))
 model.add(Activation('relu'))
 
-model.add(MaxPooling2D(pool_size=pool_size))
+model.add(MaxPooling2D(pool_size=pool_size,dim_ordering='tf'))
 model.add(Dropout(0.25))
 
 model.add(Flatten())
