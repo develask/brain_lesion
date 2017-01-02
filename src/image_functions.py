@@ -99,3 +99,16 @@ class OurImage():
 						#slices.append(self.get_slice(i,j,k,dim,sample_type))
 					#indice+=1
 		return(slices)
+
+	def filterByImage(self, image, dim, sample_type, step = 1):
+		if (image.lenx != self.lenx or image.leny != self.leny or image.lenz != self.lenz):
+			raise Exception("different image sizes")
+		slices = []
+		out_value = image[0][0][0]
+		for i in range(0,self.lenx, step):
+			for j in range(0,self.leny, step):
+				for k in range(0,self.lenz, step):
+					if (image[i][j][k] != out_value):
+						slices.append(self.get_slice(i,j,k,dim,sample_type))
+		return(slices)
+

@@ -18,6 +18,8 @@ class Examples():
 
 		# this function loads both the inputs (the subsamples) and the
 		# desired outputs (the mask)
+		brain = imf.OurImage(nib.load("../data/standars/MNI152_T1_1mm_first_brain_mask.nii.gz").get_data())
+
 		for f in os.walk("../data/"+img_type+"/normalized/"):
 			direcs = f
 			break
@@ -49,7 +51,8 @@ class Examples():
 			img_out = nib.load("../data/mask/normalized/" + images_out[i])
 			data_out = imf.OurImage(img_out.get_data())
 
-			slices = data_in.get_slices(dim, sample_type, step)
+			#slices = data_in.get_slices(dim, sample_type, step)
+			slices = data_in.filterByImage(brain, dim, sample_type, step)
 			print(len(slices))
 			for j in range(len(slices)):
 				if output_type == "regression":
