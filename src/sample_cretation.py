@@ -78,8 +78,57 @@ class Examples():
 						klasea = 0
 					self.pairs.append((slices[j], ######## akaso solo slices[j],
 													   # para pasar info adicional a la NN
-									   klasea))					
+									   klasea))
 
+	def valance(self, portion):
+		# portion --> neg/positive rate
+
+		num_pos = 0
+		for pair in self.pairs:
+			if pair[1] > 0:
+				num_pos += 1
+
+		r = list(range(0,len(self.pairs)))
+		rdm.shuffle(r)
+
+		num_pos = num_pos * portion
+		num_neg = 0
+		to_be_removed = [] # list of index that should be removed
+		for i in r:
+			if self.pairs[i][1] == 0:
+				if num_neg < num_pos:
+					num_neg += 1
+				else:
+					to_be_removed.append(i)
+
+		to_be_removed = sorted(to_be_removed,reverse=True)
+		for i in to_be_removed:
+			self.remove_elem(i)
+
+
+	def split(self, portion):
+
+		self.shuffle_exs() ## shuffle the training - test examples
+
+		tot = portion*len(self.pairs)
+		i = 0
+
+		X_train = []
+		y_train = []
+
+		X_test = []
+		y_test = []
+
+
+		for pair in self.pairs:
+			if i<tot:
+				X_train.append(pair[0].getData())
+				y_train.append(pair[1])
+				i += 1
+			else:
+				X_test.append(pair[0].getData())
+				y_test.append(pair[1])
+		return [(X_train,y_train),(X_test,y_test)]
 
 
 
