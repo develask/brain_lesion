@@ -1,19 +1,16 @@
 import numpy as np
 
 class Slice():
-	def __init__(self, x,y,z,data,tipo):
+	def __init__(self, x,y,z,image,dim,tipo):
 		self.x = x
 		self.y = y
 		self.z = z
-		self.data = data
+		self.image = image
+		self.dim = dim
 		self.tipo = tipo
-	def __iter__(self):
-		for i in range(len(self.data)):
-			for j in range(len(self.data)):
-				yield self.data[i][j]
 
-	def __getitem__(self, num):
-		return self.data[num]
+	def getData(self):
+		self.image.slice_matrix(self.x, self.y, self.z, self.dim, self.tipo);
 
 
 class OurImage():
@@ -32,7 +29,7 @@ class OurImage():
 	def __getitem__(self, num):
 		return self.data[num]
 
-	def get_slice(self,x,y,z,dim,tipo):
+	def slice_matrix(self,x,y,z,dim,tipo):
 		# tipo = 2dx, 2dy, 2dz, 3d
 		# dim ha de ser impar
 		padding = int((dim-1)/2)
@@ -64,12 +61,14 @@ class OurImage():
 					for k in range(dim):
 						if 0 <= x-padding+i < self.lenx and 0 <= y-padding+j < self.leny and  0 <= z-padding+k <= self.lenz:
 							dato[i][j][k] = self.data[x-padding+i][y-padding+j][z-padding+k]
-
 		else:
 			#print("Wrong Sample Type:", tipo)
 			raise Exception("Wrong Sample Type: "+tipo)
+		return dato
 
-		return(Slice(x,y,z,dato,tipo))
+
+	def get_slice(self,x,y,z,dim,tipo):
+		return(Slice(x,y,z,self,dim,tipo))
 
 	def get_slices(self, dim, sample_type, step = 1):
 		slices = []
