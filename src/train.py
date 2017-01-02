@@ -48,7 +48,7 @@ pool_size = (2, 2)
 kernel_size = (3, 3)
 
 ex = sc.Examples()
-ex.get_examples("flair","3d",inp_dim,step = step,output_type="classes")
+ex.get_examples("flair","2dx",inp_dim,step = step,output_type="classes")
 
 # import time
 # print("cata la ram")
@@ -72,6 +72,7 @@ for i in r:
 			to_be_removed.append(i)
 
 to_be_removed = sorted(to_be_removed,reverse=True)
+print("toberemoved",len(to_be_removed))
 for i in to_be_removed:
 	ex.remove_elem(i)
 
@@ -237,8 +238,6 @@ model.add(Activation('softmax'))
 model.compile(loss='categorical_crossentropy',
               optimizer='adadelta',
               metrics=['accuracy'])
-
-print("gonna train")
 
 
 model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch)

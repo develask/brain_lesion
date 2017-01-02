@@ -17,7 +17,7 @@ from keras.models import load_model
 
 from keras.datasets import mnist
 from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Convolution2D, MaxPooling2D
+from keras.layers import Convolution2D, MaxPooling2D, Convolution3D, MaxPooling3D
 from keras.utils import np_utils
 from keras import backend as K
 
@@ -43,9 +43,9 @@ step = 3
 # number of convolutional filters to use
 nb_filters = 32
 # size of pooling area for max pooling
-pool_size = (2, 2)
+pool_size = (2, 2, 2)
 # convolution kernel size
-kernel_size = (3, 3)
+kernel_size = (3, 3, 3)
 
 ex = sc.Examples()
 ex.get_examples("flair","3d",inp_dim,step = step,output_type="classes")
@@ -160,15 +160,15 @@ print("len pre reshape",len(X_train))
 print(X_train[0])
 
 
-X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim,1)
+
 # unselect this for 3d images
-#X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim, inp_dim,1)
+X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim, inp_dim,1)
 
-print("len post reshape",len(X_train))
-print(X_train[0])
+# print("len post reshape",len(X_train))
+# print(X_train[0])
 
-X_test = X_test.reshape(X_test.shape[0], inp_dim, inp_dim, 1)
-input_shape = (inp_dim, inp_dim, 1)
+X_test = X_test.reshape(X_test.shape[0], inp_dim, inp_dim,inp_dim, 1)
+input_shape = (inp_dim, inp_dim, inp_dim,1)
 
 
 
@@ -212,15 +212,17 @@ Y_test = np_utils.to_categorical(y_test, 2)
 model = Sequential()
 
 
-model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1],
+model.add(Convolution3D(nb_filters, kernel_size[0], kernel_size[1], kernel_size[2],
                         border_mode='valid',
                         input_shape=input_shape))
 model.add(Activation('relu'))
 
-model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1]))
+model.add(Convolution3D(nb_filters,kernel_size[0], kernel_size[1], kernel_size[2],
+						 #output_shape=[1, kernel_size[0], kernel_size[1], kernel_size[2],nb_filters],
+						 border_mode='valid'))
 model.add(Activation('relu'))
 
-model.add(MaxPooling2D(pool_size=pool_size))
+model.add(MaxPooling3D())
 model.add(Dropout(0.25))
 
 model.add(Flatten())
