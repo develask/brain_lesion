@@ -222,7 +222,7 @@ model.add(Convolution3D(nb_filters,kernel_size[0], kernel_size[1], kernel_size[2
 						 border_mode='valid'))
 model.add(Activation('relu'))
 
-model.add(MaxPooling3D())
+model.add(MaxPooling3D(pool_size=pool_size))
 model.add(Dropout(0.25))
 
 model.add(Flatten())

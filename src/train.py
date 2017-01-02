@@ -48,7 +48,7 @@ pool_size = (2, 2)
 kernel_size = (3, 3)
 
 ex = sc.Examples()
-ex.get_examples("flair","3d",inp_dim,step = step,output_type="classes")
+ex.get_examples("flair","2dx",inp_dim,step = step,output_type="classes")
 
 # import time
 # print("cata la ram")
