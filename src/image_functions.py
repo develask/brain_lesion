@@ -1,24 +1,19 @@
 import numpy as np
 
 class Slice():
-	def __init__(self, x,y,z,image,dim,tipo):
+	def __init__(self, x,y,z,fromIm):
 		self.x = x
 		self.y = y
 		self.z = z
-		self.image = image
-		self.dim = dim
-		self.tipo = tipo
-
-	def getData(self):
-		return self.image.slice_matrix(self.x, self.y, self.z, self.dim, self.tipo);
-
+		self.fromIm = fromIm
 
 class OurImage():
-	def __init__(self, data):
+	def __init__(self, data, name):
 		self.data = np.asarray(data, dtype=np.float32)
 		self.lenx = len(data)
 		self.leny = len(data[0])
 		self.lenz = len(data[0][0])
+		self.name = name
 
 	def __iter__(self):
 		for i in range(self.lenx):
@@ -67,8 +62,8 @@ class OurImage():
 		return dato
 
 
-	def get_slice(self,x,y,z,dim,tipo):
-		return(Slice(x,y,z,self,dim,tipo))
+	def get_slice(self,x,y,z):
+		return(Slice(x,y,z,self.name))
 
 	def get_slices(self, dim, sample_type, step = 1):
 		slices = []
@@ -99,7 +94,7 @@ class OurImage():
 					#indice+=1
 		return(slices)
 
-	def filterByImage(self, image, dim, sample_type, step = 1):
+	def filterByImage(self, image, step = 1):
 		if (image.lenx != self.lenx or image.leny != self.leny or image.lenz != self.lenz):
 			raise Exception("different image sizes")
 		slices = []
@@ -108,6 +103,6 @@ class OurImage():
 			for j in range(0,self.leny, step):
 				for k in range(0,self.lenz, step):
 					if (image[i][j][k] != out_value):
-						slices.append(self.get_slice(i,j,k,dim,sample_type))
+						slices.append(self.get_slice(i,j,k))
 		return(slices)
 

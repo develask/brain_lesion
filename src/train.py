@@ -48,16 +48,18 @@ pool_size = (2, 2)
 kernel_size = (3, 3)
 
 ex = sc.Examples()
-ex.get_examples("flair","2dx",inp_dim,step = step,output_type="classes")
+ex.initilize()
+ex.get_examples(step = step,output_type="classes")
 
 ex.valance(1)
-
 
 tot = ex.split(0.8)
 
 X_train,y_train = tot[0]
+X_train = ex.getData(X_train, ["flair"], "2dx", inp_dim)
 
 X_test, y_test = tot[1]
+X_test = ex.getData(X_test, ["flair"], "2dx", inp_dim)
 
 
 
@@ -110,8 +112,6 @@ print("len tests",len(X_test),len(y_test))
 # 		k+=1
 
 # print("number of positive before selection: ",k)
-
-
 
 
 X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim,1)

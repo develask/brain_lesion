@@ -7,6 +7,8 @@ import random as rdm
 class Examples():
 	def __init__(self):
 		self.pairs = []
+		self.images = {}
+		self.results = []
 
 	def remove_elem(self,ind):
 		self.pairs.pop(ind) #removing its index
@@ -18,57 +20,37 @@ class Examples():
 		del self.pairs
 		self.pairs = []
 
-	
-	def get_examples(self, img_type,sample_type,dim,step = 1,output_type="regression"):
-		# img_type, e.g. FA, MO,...
-		# sample_type, e.g. 2dx, 3d...
-		# dim dimension of the subsample
-
-		# this function loads both the inputs (the subsamples) and the
-		# desired outputs (the mask)
-		brain = imf.OurImage(nib.load("../data/standars/MNI152_T1_1mm_first_brain_mask.nii.gz").get_data())
-
-		for f in os.walk("../data/"+img_type+"/normalized/"):
-			direcs = f
-			break
-		images_in = direcs[2]
-
+	def initilize(self):
 		for f in os.walk("../data/mask/normalized/"):
 			direcs = f
 			break
-		images_ou = direcs[2]
+		images_out = direcs[2]
 
-		images_inp = []
-		images_out = []
-		for im in images_in:
-			for im2 in images_ou:
-				if im[0:6] == im2[0:6]:
-					images_inp.append(im)
-					images_out.append(im2)
+		for i in range(len(images_out)):
+			print("Loading image:", images_out[i])
+			self.results.append(imf.OurImage(nib.load("../data/mask/normalized/" + images_out[i]).get_data(), images_out[i][0:6]))
+	
+	def get_examples(self,step = 1,output_type="regression"):
 
-		# print(images_inp)
-		# print(images_out)
+		# this function loads both the inputs (the subsamples) and the
+		# desired outputs (the mask)
+		brain = imf.OurImage(nib.load("../data/standars/MNI152_T1_1mm_first_brain_mask.nii.gz").get_data(), "brain")
+
+		self.reset_exs()
+
+		for im in self.results:
+			print("Getting slices from:", im.name)
 
 
+			slices = im.filterByImage(brain, step)
 
-		for i in range(len(images_inp)):
-			print("starting with a new image..")
-			img_in = nib.load("../data/"+img_type+"/normalized/" + images_inp[i])
-			data_in = imf.OurImage(img_in.get_data())
-
-			img_out = nib.load("../data/mask/normalized/" + images_out[i])
-			data_out = imf.OurImage(img_out.get_data())
-
-			#slices = data_in.get_slices(dim, sample_type, step)
-			slices = data_in.filterByImage(brain, dim, sample_type, step)
-			print(len(slices))
 			for j in range(len(slices)):
 				if output_type == "regression":
 					self.pairs.append((slices[j], ######## akaso solo slices[j],
 													   # para pasar info adicional a la NN
-									   data_out[slices[j].x][slices[j].y][slices[j].z]))
+									   im[slices[j].x][slices[j].y][slices[j].z]))
 				else:
-					out = data_out[slices[j].x][slices[j].y][slices[j].z]
+					out = im[slices[j].x][slices[j].y][slices[j].z]
 					klasea = ()
 					if out > 0:
 						klasea = 1
@@ -105,7 +87,6 @@ class Examples():
 		for i in to_be_removed:
 			self.remove_elem(i)
 
-
 	def split(self, portion):
 
 		self.shuffle_exs() ## shuffle the training - test examples
@@ -122,32 +103,38 @@ class Examples():
 
 		for pair in self.pairs:
 			if i<tot:
-				X_train.append(pair[0].getData())
+				X_train.append(pair[0])
 				y_train.append(pair[1])
 				i += 1
 			else:
-				X_test.append(pair[0].getData())
+				X_test.append(pair[0])
 				y_test.append(pair[1])
 		return [(X_train,y_train),(X_test,y_test)]
 
+	def load(self, img_type):
+		print("Loading", img_type, "type")
+		for f in os.walk("../data/"+img_type+"/normalized/"):
+			direcs = f
+			break
+		images_in = direcs[2]
+		newImages = []
+		for i in range(len(images_in)):
+			name = images_in[i]
+			if not img_type+"-"+name[0:6] in self.images:
+				self.images[img_type+"-"+name[0:6]] = imf.OurImage(nib.load("../data/"+img_type+"/normalized/" + name).get_data(), name[0:6])
 
+	def getData(self, indexes, img_types, sample_type, dim):
+		# img_types, e.g. FA, MO,...
+		# sample_type, e.g. 2dx, 3d...
+		# dim dimension of the subsample
+		for img_type in img_types:
+			self.load(img_type)
 
-
-
-
-
-
-
-
-
-
-		
-
-
-
-
-
-
-
-
+		newList = []
+		for el in indexes:
+			data = []
+			for img_type in img_types:
+				data.append(self.images[img_type+"-"+el.fromIm].slice_matrix(el.x, el.y, el.z, dim, sample_type))
+			newList.append(data)
+		return newList
 
