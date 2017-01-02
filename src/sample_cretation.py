@@ -6,6 +6,10 @@ import image_functions as imf
 class Examples():
 	def __init__(self):
 		self.pairs = []
+
+	def remove_elem(self,ind):
+		self.pairs.pop(ind) #removing its index
+
 	
 	def get_examples(self, img_type,sample_type,dim,step = 1,output_type="regression"):
 		# img_type, e.g. FA, MO,...

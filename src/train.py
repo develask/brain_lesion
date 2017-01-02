@@ -46,35 +46,63 @@ kernel_size = (3, 3)
 ex = sc.Examples()
 ex.get_examples("flair","2dx",9,step = 3,output_type="classes")
 
+num_pos = 0
+for pair in ex.pairs:
+	if pair[1][1] == 1:
+		num_pos += 1
 
-print(ex.pairs[322])
-print("number of examples",len(ex.pairs))
+r = list(range(0,len(ex.pairs)))
+rdm.shuffle(r)
 
-k = 0
-for x in ex.pairs:
-	if x[1][1] == 1:
-		k += 1
+num_neg = 0
+to_be_removed = [] # list of index that should be removed
+for i in r:
+	if ex.pairs[i][1][1] == 0:
+		if num_neg < num_pos:
+			num_neg += 1
+		else:
+			to_be_removed.append(i)
 
-print("number of positive after selection: ",k)
-
-
-img_out = nib.load("../data/mask/normalized/tka003_lesion_mask_norm.nii.gz")
-data_out = imf.OurImage(img_out.get_data())
-
-k=0
-for x in data_out:
-	if x >0:
-		k+=1
-
-img_out = nib.load("../data/mask/normalized/tka004_lesion_mask_norm.nii.gz")
-data_out = imf.OurImage(img_out.get_data())
+to_be_removed = sorted(to_be_removed,reverse=True)
+for i in to_be_removed:
+	ex.remove_elem(i)
 
 
-for x in data_out:
-	if x >0:
-		k+=1
+print("len of pairs",len(ex.pairs))
 
-print("number of positive before selection: ",k)
+
+
+
+
+
+
+
+
+# print(ex.pairs[322])
+# print("number of examples",len(ex.pairs))
+
+
+
+# print("number of positive after selection: ",k)
+
+
+# img_out = nib.load("../data/mask/normalized/tka003_lesion_mask_norm.nii.gz")
+# data_out = imf.OurImage(img_out.get_data())
+
+# k=0
+# for x in data_out:
+# 	if x >0:
+# 		k+=1
+
+# img_out = nib.load("../data/mask/normalized/tka004_lesion_mask_norm.nii.gz")
+# data_out = imf.OurImage(img_out.get_data())
+
+
+# for x in data_out:
+# 	if x >0:
+# 		k+=1
+
+# print("number of positive before selection: ",k)
 
 quit()
 
