@@ -70,6 +70,37 @@ for i in to_be_removed:
 
 print("len of pairs",len(ex.pairs))
 
+ex.shuffle_exs() ## shuffle the training - test examples
+
+train_test = 0.8 # train test proportion
+i = 0
+train = []
+test = []
+for pair in ex.pairs:
+	if i<0.8*len(ex.pairs):
+		train.append(pair)
+	else:
+		test.append(pair)
+
+ex.reset_exs() # liberate the RAM a little,
+
+X_train = np.empty(len(train))
+y_train = np.empty(len(train))
+for i in range(len(train)):
+	X_train[i] = train[i][0]
+	y_train[i] = train[i][1]
+
+X_test = np.empty(len(test))
+y_test = np.empty(len(test))
+for i in range(len(test)):
+	X_test[i] = test[i][0]
+	y_test[i] = test[i][1]
+
+del train
+del test # liberate more RAM
+
+
+
 
 
 

@@ -2,6 +2,7 @@ import os
 import numpy as np
 import nibabel as nib
 import image_functions as imf
+import random as rdm
 
 class Examples():
 	def __init__(self):
@@ -9,6 +10,13 @@ class Examples():
 
 	def remove_elem(self,ind):
 		self.pairs.pop(ind) #removing its index
+
+	def shuffle_exs(self):
+		rdm.shuffle(self.pairs)
+
+	def reset_exs(self):
+		del self.pairs
+		self.pairs = []
 
 	
 	def get_examples(self, img_type,sample_type,dim,step = 1,output_type="regression"):
