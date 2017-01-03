@@ -46,6 +46,8 @@ pool_size = (2, 2)
 # convolution kernel size
 kernel_size = (3, 3)
 
+img_types = ["flair"]
+
 ex = sc.Examples()
 ex.initilize()
 ex.get_examples(step = step,output_type="classes")
@@ -55,24 +57,10 @@ ex.valance(1)
 tot = ex.split(0.8)
 
 X_train,y_train = tot[0]
-X_train = ex.getData(X_train, ["flair"], "2dx", inp_dim)
+X_train = ex.getData(X_train, img_types, "2dx", inp_dim)
 
 X_test, y_test = tot[1]
-X_test = ex.getData(X_test, ["flair"], "2dx", inp_dim)
-
-
-
-
-# print("voy a borrar pairs")
-# time.sleep(5)
-
-# ex.reset_exs() # liberate the RAM a little,
-# del ex
-# gc.collect()
-
-# print("he borrado")
-# time.sleep(5)
-
+X_test = ex.getData(X_test, img_types, "2dx", inp_dim)
 
 X_train = np.asarray(X_train)
 y_train = np.asarray(y_train)
@@ -113,13 +101,13 @@ print("len tests",len(X_test),len(y_test))
 # print("number of positive before selection: ",k)
 
 
-X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim,1)
+X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim,len(img_types))
 # unselect this for 3d images
 #X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim, inp_dim,1)
 
 
-X_test = X_test.reshape(X_test.shape[0], inp_dim, inp_dim, 1)
-input_shape = (inp_dim, inp_dim, 1)
+X_test = X_test.reshape(X_test.shape[0], inp_dim, inp_dim, len(img_types))
+input_shape = (inp_dim, inp_dim, len(img_types))
 
 
 
@@ -195,7 +183,7 @@ model.add(Dense(nb_classes))
 model.add(Activation('softmax'))
 print("Output shape after softmax (2 classes):", model.output_shape)
 
-quit()
+
 
 
 
