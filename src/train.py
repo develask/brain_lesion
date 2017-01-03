@@ -40,7 +40,7 @@ nb_epoch = 12
 
 # input image dimensions
 inp_dim = 19
-step = 6
+step = 3
 # number of convolutional filters to use
 nb_filters = 32
 # size of pooling area for max pooling
@@ -54,9 +54,9 @@ ex = sc.Examples()
 ex.initilize()
 ex.get_examples(step = step,output_type="classes")
 
-ex.valance(2)
+ex.valance(10)
 
-tot = ex.split(0.8)
+tot = ex.split(0.9)
 
 X_train,y_train = tot[0]
 X_train = ex.getData(X_train, img_types, "2dx", inp_dim)
@@ -217,7 +217,7 @@ model.compile(loss='binary_crossentropy',
 print("gonna train")
 
 
-model.fit(X_train, y_train, batch_size=batch_size, nb_epoch=nb_epoch)
+model.fit(X_train, y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
 model.save("../models/model_0.mdl")
 
 
@@ -227,9 +227,10 @@ model.save("../models/model_0.mdl")
 
 
 
-score = model.evaluate(X_test, y_test, verbose=1)
-print('Test score:', score[0])
-print('Test accuracy:', score[1])
+#model = load_model("../models/model_0.mdl")
+# score = model.evaluate(X_test, y_test, verbose=1)
+# print('Test score:', score[0])
+# print('Test accuracy:', score[1])
 
 def evaluate(model,X_test,y_test):
 	y_pred = model.predict(X_test)
