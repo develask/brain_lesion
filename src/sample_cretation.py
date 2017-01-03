@@ -46,18 +46,19 @@ class Examples():
 
 			for j in range(len(slices)):
 				if output_type == "regression":
+					val = im[slices[j].x][slices[j].y][slices[j].z])
 					self.pairs.append((slices[j], ######## akaso solo slices[j],
 													   # para pasar info adicional a la NN
-									   im[slices[j].x][slices[j].y][slices[j].z]))
+									   (1-val, val))
 				else:
 					out = im[slices[j].x][slices[j].y][slices[j].z]
 					klasea = ()
 					if out > 0:
-						klasea = 1
-						#klasea = (0,1)
+						#klasea = 1
+						klasea = (0,1)
 					else:
-						# klasea = (1,0)
-						klasea = 0
+						klasea = (1,0)
+						#klasea = 0
 					self.pairs.append((slices[j], ######## akaso solo slices[j],
 													   # para pasar info adicional a la NN
 									   klasea))
@@ -67,7 +68,7 @@ class Examples():
 
 		num_pos = 0
 		for pair in self.pairs:
-			if pair[1] > 0:
+			if pair[1][1] > 0:
 				num_pos += 1
 
 		r = list(range(0,len(self.pairs)))
@@ -77,7 +78,7 @@ class Examples():
 		num_neg = 0
 		to_be_removed = [] # list of index that should be removed
 		for i in r:
-			if self.pairs[i][1] == 0:
+			if self.pairs[i][1][1] == 0:
 				if num_neg < num_pos:
 					num_neg += 1
 				else:
