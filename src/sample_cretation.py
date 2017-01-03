@@ -46,10 +46,12 @@ class Examples():
 
 			for j in range(len(slices)):
 				if output_type == "regression":
-					val = im[slices[j].x][slices[j].y][slices[j].z])
+					val = im[slices[j].x][slices[j].y][slices[j].z]
+					if val > 0:
+						val = val/2 + 0.5
 					self.pairs.append((slices[j], ######## akaso solo slices[j],
 													   # para pasar info adicional a la NN
-									   (1-val, val))
+									   (1-val, val)))
 				else:
 					out = im[slices[j].x][slices[j].y][slices[j].z]
 					klasea = ()

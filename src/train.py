@@ -26,6 +26,8 @@ import random as rdm
 import nibabel as nib
 import image_functions as imf
 import gc
+
+import tensorflow as tf
     
 
 #############################################
@@ -38,7 +40,7 @@ nb_epoch = 12
 
 # input image dimensions
 inp_dim = 19
-step = 3
+step = 6
 # number of convolutional filters to use
 nb_filters = 32
 # size of pooling area for max pooling
@@ -52,7 +54,7 @@ ex = sc.Examples()
 ex.initilize()
 ex.get_examples(step = step,output_type="classes")
 
-ex.valance(1)
+ex.valance(2)
 
 tot = ex.split(0.8)
 
@@ -119,11 +121,33 @@ print('X_train shape:', X_train.shape)
 print(X_train.shape[0], 'train samples')
 print(X_test.shape[0], 'test samples')
 
+print(len(y_train),len(X_train))
+print(y_test)
+
+# y_train2 = []
+# y_test2 = []
+
+# for i in range(len(y_train)):
+# 	y_train2.append(y_train[i][1])
+
+# for i in range(len(y_test)):
+# 	y_test2.append(y_test[i][1])
 
 # convert class vectors to binary class matrices (2 <-> binary classes)
-Y_train = np_utils.to_categorical(y_train, 2)
-Y_test = np_utils.to_categorical(y_test, 2)
+# Y_train = np_utils.to_categorical(y_train2, 2)
+# Y_test = np_utils.to_categorical(y_test2, 2)
 
+
+
+# print(y_train[0])
+# print(Y_train[0])
+
+# print(y_train[1])
+# print(Y_train[1])
+
+# print(y_train[3])
+# print(Y_train[3])
+# quit()
 # model = Sequential()
 
 
@@ -165,7 +189,7 @@ model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1]))
 model.add(Activation('relu'))
 print("Output shape of 3rd convolution:", model.output_shape)
 
-model.add(MaxPooling2D(pool_size=pool_size,))
+model.add(MaxPooling2D(pool_size=pool_size))
 print("Output shape after a max pooling:", model.output_shape)
 model.add(Dropout(0.25))
 print("Output shape after dropout:", model.output_shape)
@@ -186,15 +210,14 @@ print("Output shape after softmax (2 classes):", model.output_shape)
 
 
 
-
-model.compile(loss='categorical_crossentropy',
+model.compile(loss='binary_crossentropy',
               optimizer='adadelta',
               metrics=['accuracy'])
 
 print("gonna train")
 
 
-model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch)
+model.fit(X_train, y_train, batch_size=batch_size, nb_epoch=nb_epoch)
 model.save("../models/model_0.mdl")
 
 
@@ -204,10 +227,33 @@ model.save("../models/model_0.mdl")
 
 
 
-score = model.evaluate(X_test, Y_test, verbose=1)
+score = model.evaluate(X_test, y_test, verbose=1)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
 
+def evaluate(model,X_test,y_test):
+	y_pred = model.predict(X_test)
+	mat = [[0,0],[0,0]] # [[TP,FP],[FN,TN]]
+	for i in range(len(y_pred)):
+		if y_test[i][1] == 0: # real negative
+			mat[1][1] += y_pred[i][0] #TN
+			mat[0][1] += y_pred[i][1] #FP
+		else:
+			mat[1][0] += y_pred[i][0] #FN
+			mat[0][0] += y_pred[i][1] #TP
 
+	mat[0][0] /= len(y_pred)
+	mat[0][1] /= len(y_pred)
+	mat[1][0] /= len(y_pred)
+	mat[1][1] /= len(y_pred)
 
+	TPR = mat[0][0] / (mat[0][0] + mat[1][0])
+	TNR = mat[1][1] / (mat[1][1] + mat[0][1])
+	return(mat,TPR,TNR)		
+
+score = evaluate(model,X_test,y_test)
+print(score[0][0])
+print(score[0][1])
+print("TPR:", score[1])
+print("TNR:", score[2])
 

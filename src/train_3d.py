@@ -38,7 +38,7 @@ nb_epoch = 12
 
 # input image dimensions
 inp_dim = 7
-step = 3
+step = 2
 
 # number of convolutional filters to use
 nb_filters = 32
@@ -47,65 +47,23 @@ pool_size = (2, 2, 2)
 # convolution kernel size
 kernel_size = (3, 3, 3)
 
+
+
+img_types = ["flair","anatomica","FA"]
+
 ex = sc.Examples()
-ex.get_examples("flair","3d",inp_dim,step = step,output_type="classes")
+ex.initilize()
+ex.get_examples(step = step,output_type="classes")
 
-# import time
-# print("cata la ram")
-# time.sleep(5)
+ex.valance(5)
 
-num_pos = 0
-for pair in ex.pairs:
-	if pair[1] == 1:
-		num_pos += 1
+tot = ex.split(0.8)
 
-r = list(range(0,len(ex.pairs)))
-rdm.shuffle(r)
+X_train,y_train = tot[0]
+X_train = ex.getData(X_train, img_types, "3d", inp_dim)
 
-num_neg = 0
-to_be_removed = [] # list of index that should be removed
-for i in r:
-	if ex.pairs[i][1] == 0:
-		if num_neg < num_pos:
-			num_neg += 1
-		else:
-			to_be_removed.append(i)
-
-to_be_removed = sorted(to_be_removed,reverse=True)
-for i in to_be_removed:
-	ex.remove_elem(i)
-
-
-print("len of pairs",len(ex.pairs))
-
-ex.shuffle_exs() ## shuffle the training - test examples
-
-train_test = 0.8 # train test proportion
-i = 0
-X_train = []
-y_train = []
-X_test = []
-y_test = []
-for pair in ex.pairs:
-	kk = pair[0].getData()
-	if i<0.8*len(ex.pairs):
-		X_train.append(kk)
-		y_train.append(pair[1])
-		i += 1
-	else:
-		X_test.append(kk)
-		y_test.append(pair[1])
-
-# print("voy a borrar pairs")
-# time.sleep(5)
-
-# ex.reset_exs() # liberate the RAM a little,
-# del ex
-# gc.collect()
-
-# print("he borrado")
-# time.sleep(5)
-
+X_test, y_test = tot[1]
+X_test = ex.getData(X_test, img_types, "3d", inp_dim)
 
 X_train = np.asarray(X_train)
 y_train = np.asarray(y_train)
@@ -151,13 +109,13 @@ print(X_train[0])
 
 
 # unselect this for 3d images
-X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim, inp_dim, 1)
+X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim, inp_dim, len(img_types))
 
 # print("len post reshape",len(X_train))
 # print(X_train[0])
 
-X_test = X_test.reshape(X_test.shape[0], inp_dim, inp_dim,inp_dim, 1)
-input_shape = (inp_dim, inp_dim, inp_dim, 1)
+X_test = X_test.reshape(X_test.shape[0], inp_dim, inp_dim,inp_dim, len(img_types))
+input_shape = (inp_dim, inp_dim, inp_dim, len(img_types))
 
 
 
