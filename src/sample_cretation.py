@@ -67,7 +67,7 @@ class Examples():
 
 	def valance(self, portion):
 		# portion --> neg/positive rate
-
+		print("Valancing data: (",portion,"negatives for 1 positive )")
 		num_pos = 0
 		for pair in self.pairs:
 			if pair[1][1] > 0:
@@ -91,7 +91,7 @@ class Examples():
 			self.remove_elem(i)
 
 	def split(self, portion):
-
+		print("Spliting data for train test:",portion)
 		self.shuffle_exs() ## shuffle the training - test examples
 
 		tot = portion*len(self.pairs)
@@ -115,7 +115,7 @@ class Examples():
 		return [(X_train,y_train),(X_test,y_test)]
 
 	def load(self, img_type):
-		print("Loading", img_type, "type")
+		print("\tChecking", img_type, "type...")
 		for f in os.walk("../data/"+img_type+"/normalized/"):
 			direcs = f
 			break
@@ -124,12 +124,14 @@ class Examples():
 		for i in range(len(images_in)):
 			name = images_in[i]
 			if not img_type+"-"+name[0:6] in self.images:
+				print("\t\tLoading", img_type+"-"+name[0:6], "image")
 				self.images[img_type+"-"+name[0:6]] = imf.OurImage(nib.load("../data/"+img_type+"/normalized/" + name).get_data(), name[0:6])
 
 	def getData(self, indexes, img_types, sample_type, dim):
 		# img_types, e.g. FA, MO,...
 		# sample_type, e.g. 2dx, 3d...
 		# dim dimension of the subsample
+		print("Getting data for: ", img_types, "and", sample_type)
 		for img_type in img_types:
 			self.load(img_type)
 
@@ -140,4 +142,5 @@ class Examples():
 				data.append(self.images[img_type+"-"+el.fromIm].slice_matrix(el.x, el.y, el.z, dim, sample_type))
 			newList.append(data)
 		return newList
+
 
