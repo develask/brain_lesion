@@ -36,11 +36,11 @@ import tensorflow as tf
 
 batch_size = 128
 nb_classes = 2
-nb_epoch = 12
+nb_epoch = 10
 
 # input image dimensions
-inp_dim = 19
-step = 3
+inp_dim = 35
+step = 5
 # number of convolutional filters to use
 nb_filters = 32
 # size of pooling area for max pooling
@@ -48,15 +48,15 @@ pool_size = (2, 2)
 # convolution kernel size
 kernel_size = (3, 3)
 
-img_types = ["flair"]
+img_types = ["flair","anatomica"]
 
 ex = sc.Examples()
 ex.initilize()
 ex.get_examples(step = step,output_type="classes")
 
-ex.valance(10)
+ex.valance(1)
 
-tot = ex.split(0.9)
+tot = ex.split(0.8)
 
 X_train,y_train = tot[0]
 X_train = ex.getData(X_train, img_types, "2dx", inp_dim)
@@ -193,9 +193,9 @@ model.add(MaxPooling2D(pool_size=pool_size))
 print("Output shape after a max pooling:", model.output_shape)
 model.add(Dropout(0.25))
 print("Output shape after dropout:", model.output_shape)
-
 model.add(Flatten())
 print("Output shape after flatten:", model.output_shape)
+
 model.add(Dense(128))
 print("Output shape after (dense 128):", model.output_shape)
 model.add(Activation('relu'))
@@ -217,7 +217,7 @@ model.compile(loss='binary_crossentropy',
 print("gonna train")
 
 
-model.fit(X_train, y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
+learning = model.fit(X_train, y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
 model.save("../models/model_0.mdl")
 
 
