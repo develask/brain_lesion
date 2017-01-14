@@ -10,6 +10,13 @@ class Examples():
 		self.images = {}
 		self.results = []
 
+	def __iter__(self):
+		for el in self.pairs:
+			yield el
+
+	def __getitem__(self, num):
+		return self.pairs[num]
+
 	def remove_elem(self,ind):
 		self.pairs.pop(ind) #removing its index
 
@@ -20,15 +27,19 @@ class Examples():
 		del self.pairs
 		self.pairs = []
 
-	def initilize(self):
+	def initilize(self, img = None):
 		for f in os.walk("../data/mask/normalized/"):
 			direcs = f
 			break
 		images_out = direcs[2]
 
 		for i in range(len(images_out)):
-			print("Loading image:", images_out[i])
-			self.results.append(imf.OurImage(nib.load("../data/mask/normalized/" + images_out[i]).get_data(), images_out[i][0:6]))
+			try:
+				if (img == None or images_out[i].index(img)>-1):
+					print("Loading image:", images_out[i])
+					self.results.append(imf.OurImage(nib.load("../data/mask/normalized/" + images_out[i]).get_data(), images_out[i][0:6]))
+			except:
+				pass
 	
 	def get_examples(self,step = 1,output_type="regression"):
 
@@ -114,8 +125,8 @@ class Examples():
 				y_test.append(pair[1])
 		return [(X_train,y_train),(X_test,y_test)]
 
-	def load(self, img_type):
-		print("\tChecking", img_type, "type...")
+	def load(self, img_type, crbs):
+		#print("\tChecking", img_type, "type...")
 		for f in os.walk("../data/"+img_type+"/normalized/"):
 			direcs = f
 			break
@@ -123,17 +134,20 @@ class Examples():
 		newImages = []
 		for i in range(len(images_in)):
 			name = images_in[i]
-			if not img_type+"-"+name[0:6] in self.images:
-				print("\t\tLoading", img_type+"-"+name[0:6], "image")
-				self.images[img_type+"-"+name[0:6]] = imf.OurImage(nib.load("../data/"+img_type+"/normalized/" + name).get_data(), name[0:6])
+			try:
+				if ((not img_type+"-"+name[0:6] in self.images) or crbs==None or name.index(crbs)>-1):
+					#print("\t\tLoading", img_type+"-"+name[0:6], "image")
+					self.images[img_type+"-"+name[0:6]] = imf.OurImage(nib.load("../data/"+img_type+"/normalized/" + name).get_data(), name[0:6])
+			except:
+				pass
 
-	def getData(self, indexes, img_types, sample_type, dim):
+	def getData(self, indexes, img_types, sample_type, dim, crbs=None):
 		# img_types, e.g. FA, MO,...
 		# sample_type, e.g. 2dx, 3d...
 		# dim dimension of the subsample
-		print("Getting data for: ", img_types, "and", sample_type)
+		#print("Getting data for: ", img_types, "and", sample_type)
 		for img_type in img_types:
-			self.load(img_type)
+			self.load(img_type, crbs)
 
 		newList = []
 		for el in indexes:
