@@ -62,16 +62,16 @@ img_types = ["flair", "FA", "anatomica"]
 train_brain = ["tka003","tka004"]
 test_brain = ["tka002"]
 
-#valance proportion
-val_train = 10
-val_test = 10
+#balance proportion
+bal_train = 10
+bal_test = 10
 
 ## load training data
 
 ex = sc.Examples()
 ex.initilize(crbs=train_brain)
 ex.get_examples(step = step,output_type="classes")
-ex.valance(val_train)
+ex.balance(bal_train)
 tot = ex.split(1)
 
 X_train,y_train = tot[0]
@@ -86,7 +86,7 @@ print("size y_train",len(y_train))
 ex = sc.Examples()
 ex.initilize(crbs=test_brain)
 ex.get_examples(step = step,output_type="classes")
-ex.valance(val_test)
+ex.balance(bal_test)
 tot = ex.split(1)
 
 X_test, y_test = tot[0]
@@ -229,7 +229,7 @@ final_model.save("../models/model_paralel.mdl")
 
 
 
-model = load_model("../models/model_0.mdl")
+#model = load_model("../models/model_0.mdl")
 
 
 def evaluate(model,X_test,y_test):

@@ -82,9 +82,9 @@ class Examples():
 													   # para pasar info adicional a la NN
 									   klasea))
 
-	def valance(self, portion):
+	def balance(self, portion):
 		# portion --> neg/positive rate
-		print("Valancing data: (",portion,"negatives for 1 positive )")
+		print("Balancing data: (",portion,"negatives per positive )")
 		num_pos = 0
 		for pair in self.pairs:
 			if pair[1][1] > 0:
