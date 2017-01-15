@@ -82,14 +82,15 @@ for image in images:
 		img = nib.load("../data/raw/" + dir_name + "/" + image)
 		print("try finished")
 		data_tmp = img.get_data()
-		data = imf.OurImage(data_tmp)
+		data = imf.OurImage(data_tmp,"")
 		std_data(data.data)
 		img = nib.Nifti1Image(data.data, np.eye(4))
 		tipo = getImgType(image)
 		#nib.save(img,"../data/tipo/"+image[0:-8]+"_norm.nii.gz")
 		print("../data/" + tipo + "/" + image[0:-7] + "_norm.nii.gz")
 		nib.save(img, "../data/" + tipo + "/normalized/" + image[0:-7] + "_norm.nii.gz")
-	except:
+	except Exception as e:
+		print e
 		print("EOFError in IMAGE:",image)
 		print("passing...")
 		continue
