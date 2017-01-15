@@ -134,12 +134,16 @@ class Examples():
 		newImages = []
 		for i in range(len(images_in)):
 			name = images_in[i]
-			try:
-				if ((not img_type+"-"+name[0:6] in self.images) or crbs==None or name.index(crbs)>-1):
-					#print("\t\tLoading", img_type+"-"+name[0:6], "image")
+			if (crbs!=None):
+				for c in crbs:
+					try:
+						if (not img_type+"-"+name[0:6] in self.images or name.index(c)>-1):
+							self.images[img_type+"-"+name[0:6]] = imf.OurImage(nib.load("../data/"+img_type+"/normalized/" + name).get_data(), name[0:6])
+					except:
+						pass
+			else:
+				if (not img_type+"-"+name[0:6] in self.images):
 					self.images[img_type+"-"+name[0:6]] = imf.OurImage(nib.load("../data/"+img_type+"/normalized/" + name).get_data(), name[0:6])
-			except:
-				pass
 
 	def getData(self, indexes, img_types, sample_type, dim, crbs=None):
 		# img_types, e.g. FA, MO,...

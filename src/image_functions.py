@@ -65,35 +65,6 @@ class OurImage():
 	def get_slice(self,x,y,z):
 		return(Slice(x,y,z,self.name))
 
-	def get_slices(self, dim, sample_type, step = 1):
-		slices = []
-		# for i in range(int((self.lenx+step-1)/step) * int((self.leny+step-1)/step) * int((self.lenz+step-1)/step)):
-		# 	slices.append(None)
-		#slices = np.zeros(int((self.lenx+step-1)/step) * int((self.leny+step-1)/step) * int((self.lenz+step-1)/step))
-		#indice = 0
-
-		# get space value
-		space_val = self.data[0][0][0]
-
-		for i in range(0,self.lenx, step):
-			for j in range(0,self.leny, step):
-				for k in range(0,self.lenz, step):
-					a = self.get_slice(i,j,k,dim,sample_type)
-
-					all_space = True
-					for x in a:
-						# print(type(x))
-						# print(type(space_val))
-						if (x - space_val)*(x - space_val) > 0.001:
-							all_space = False
-							break
-
-					if (all_space == False):
-						slices.append(a)
-						#slices.append(self.get_slice(i,j,k,dim,sample_type))
-					#indice+=1
-		return(slices)
-
 	def filterByImage(self, image, step = 1):
 		if (image.lenx != self.lenx or image.leny != self.leny or image.lenz != self.lenz):
 			raise Exception("different image sizes")

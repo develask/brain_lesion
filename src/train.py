@@ -59,7 +59,7 @@ ex.valance(1)
 tot = ex.split(0.8)
 
 X_train,y_train = tot[0]
-X_train = ex.getData(X_train, img_types, "2dx", inp_dim)
+X_train = ex.getData(X_train, img_types, "2dx", inp_dim, crbs = ["tka003"])
 
 X_test, y_test = tot[1]
 X_test = ex.getData(X_test, img_types, "2dx", inp_dim)
