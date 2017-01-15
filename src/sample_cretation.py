@@ -27,21 +27,27 @@ class Examples():
 		del self.pairs
 		self.pairs = []
 
-	def initilize(self, img = None):
+	def initilize(self, crbs = None):
 		for f in os.walk("../data/mask/normalized/"):
 			direcs = f
 			break
 		images_out = direcs[2]
 
 		for i in range(len(images_out)):
-			try:
-				if (img == None or images_out[i].index(img)>-1):
-					print("Loading image:", images_out[i])
-					self.results.append(imf.OurImage(nib.load("../data/mask/normalized/" + images_out[i]).get_data(), images_out[i][0:6]))
-			except:
-				pass
+			if (crbs!=None):
+				for c in crbs:
+					try:
+						if (images_out[i].index(c)>-1):
+							print("Loading image:", images_out[i])
+							self.results.append(imf.OurImage(nib.load("../data/mask/normalized/" + images_out[i]).get_data(), images_out[i][0:6]))
+					except:
+						pass
+			else:
+				print("Loading image:", images_out[i])
+				self.results.append(imf.OurImage(nib.load("../data/mask/normalized/" + images_out[i]).get_data(), images_out[i][0:6]))
+
 	
-	def get_examples(self,step = 1,output_type="regression"):
+	def get_examples(self,step = 1,output_type="classes"):
 
 		# this function loads both the inputs (the subsamples) and the
 		# desired outputs (the mask)

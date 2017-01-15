@@ -69,7 +69,7 @@ val_test = 10
 ## load training data
 
 ex = sc.Examples()
-ex.initilize()
+ex.initilize(crbs=train_brain)
 ex.get_examples(step = step,output_type="classes")
 ex.valance(val_train)
 tot = ex.split(1)
@@ -84,7 +84,7 @@ print("size y_train",len(y_train))
 ## load test data
 
 ex = sc.Examples()
-ex.initilize()
+ex.initilize(crbs=test_brain)
 ex.get_examples(step = step,output_type="classes")
 ex.valance(val_test)
 tot = ex.split(1)
