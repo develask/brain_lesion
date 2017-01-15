@@ -43,7 +43,7 @@ nb_epoch = 12
 
 # input image dimensions
 inp_dim_2d = 19
-inp_dim_3d = 7
+inp_dim_3d = 9
 step = 2
 
 # number of convolutional filters to use
@@ -58,28 +58,43 @@ kernel_size_3d = (3, 3, 3)
 # img types that will be taken as input
 img_types = ["flair", "FA", "anatomica"]
 
+#train_data partition
+train_brain = ["tka003","tka004"]
+test_brain = ["tka002"]
+
+#valance proportion
+val_train = 10
+val_test = 10
+
+## load training data
+
 ex = sc.Examples()
 ex.initilize()
 ex.get_examples(step = step,output_type="classes")
-
-ex.valance(10)
-
-tot = ex.split(0.8)
-
-## load data
+ex.valance(val_train)
+tot = ex.split(1)
 
 X_train,y_train = tot[0]
-X_train_x = np.asarray(ex.getData(X_train, img_types, "2dx", inp_dim_2d))
-X_train_y = np.asarray(ex.getData(X_train, img_types, "2dy", inp_dim_2d))
-X_train_z = np.asarray(ex.getData(X_train, img_types, "2dz", inp_dim_2d))
-X_train_3d = np.asarray(ex.getData(X_train, img_types, "3d", inp_dim_3d))
+X_train_x = np.asarray(ex.getData(X_train, img_types, "2dx", inp_dim_2d, crbs=train_brain))
+X_train_y = np.asarray(ex.getData(X_train, img_types, "2dy", inp_dim_2d, crbs=train_brain))
+X_train_z = np.asarray(ex.getData(X_train, img_types, "2dz", inp_dim_2d, crbs=train_brain))
+X_train_3d = np.asarray(ex.getData(X_train, img_types, "3d", inp_dim_3d, crbs=train_brain))
 
+print("size y_train",len(y_train))
+## load test data
 
-X_test, y_test = tot[1]
-X_test_x = np.asarray(ex.getData(X_test, img_types, "2dx", inp_dim_2d))
-X_test_y = np.asarray(ex.getData(X_test, img_types, "2dy", inp_dim_2d))
-X_test_z = np.asarray(ex.getData(X_test, img_types, "2dz", inp_dim_2d))
-X_test_3d = np.asarray(ex.getData(X_test, img_types, "3d", inp_dim_3d))
+ex = sc.Examples()
+ex.initilize()
+ex.get_examples(step = step,output_type="classes")
+ex.valance(val_test)
+tot = ex.split(1)
+
+X_test, y_test = tot[0]
+X_test_x = np.asarray(ex.getData(X_test, img_types, "2dx", inp_dim_2d,crbs=test_brain))
+X_test_y = np.asarray(ex.getData(X_test, img_types, "2dy", inp_dim_2d,crbs=test_brain))
+X_test_z = np.asarray(ex.getData(X_test, img_types, "2dz", inp_dim_2d,crbs=test_brain))
+X_test_3d = np.asarray(ex.getData(X_test, img_types, "3d", inp_dim_3d,crbs=test_brain))
+
 
 # reshape it so its format is the requierd
 
@@ -178,11 +193,11 @@ model_3d.add(Convolution3D(nb_filters,kernel_size_3d[0], kernel_size_3d[1], kern
 						 border_mode='valid'))
 model_3d.add(Activation('relu'))
 print("Output shape of 2nd convolution (3d):", model_3d.output_shape)
-model_3d.add(MaxPooling3D(pool_size=pool_size_3d))
-model_3d.add(Dropout(0.25))
-print("Output shape after flatten (3d):", model_3d.output_shape)
+#model_3d.add(MaxPooling3D(pool_size=pool_size_3d))
+#model_3d.add(Dropout(0.25))
+#print("Output shape after max pooling (3d):", model_3d.output_shape)
 model_3d.add(Flatten())
-
+print("Output shape after flatten (3d):", model_3d.output_shape)
 
 
 merged = Merge([model_x, model_y, model_z, model_3d], mode='concat')
