@@ -24,10 +24,10 @@ from keras.utils import np_utils
 from keras.models import model_from_json
 from keras import backend as K
 
-import sample_cretation as sc
+
 import random as rdm
 import nibabel as nib
-import image_functions as imf
+import image_manager as imm
 import gc
 
 import tensorflow as tf
@@ -42,9 +42,9 @@ nb_classes = 2
 nb_epoch = 12
 
 # input image dimensions
-inp_dim_2d = 3
+inp_dim_2d = 35
 inp_dim_3d = 11
-step = 11
+step = 7
 
 # number of convolutional filters to use
 nb_filters = 32
@@ -80,50 +80,68 @@ bal_test = 10
 
 ## load training data
 
-ex = sc.Examples()
-ex.initilize(crbs=train_brain)
-ex.get_examples(step = step,output_type="classes")
-ex.balance(bal_train)
-tot = ex.split(1)
+# ex = sc.Examples()
+# ex.initilize(crbs=train_brain)
+# ex.get_examples(step = step,output_type="classes")
+# ex.balance(bal_train)
+# tot = ex.split(1)
 
-X_train,y_train = tot[0]
-X_train_x = np.asarray(ex.getData(X_train, img_types, "2dx", inp_dim_2d, crbs=train_brain))
-X_train_y = np.asarray(ex.getData(X_train, img_types, "2dy", inp_dim_2d, crbs=train_brain))
-X_train_z = np.asarray(ex.getData(X_train, img_types, "2dz", inp_dim_2d, crbs=train_brain))
-X_train_3d = np.asarray(ex.getData(X_train, img_types, "3d", inp_dim_3d, crbs=train_brain))
+tr = imm.ImageManager() # load training data
+tr.init(train_brain)
+tr.createSlices(step=step)
+tr.balance(bal_train)
+tr.split(1) # we will select the hole brain
+
+X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
+y_train = X_train_x[1]
+X_train_x = X_train_x[0]
+
+X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
+
+X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
+
+X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
+
+
+
+# X_train,y_train = tot[0]
+# X_train_x = np.asarray(ex.getData(X_train, img_types, "2dx", inp_dim_2d, crbs=train_brain))
+# X_train_y = np.asarray(ex.getData(X_train, img_types, "2dy", inp_dim_2d, crbs=train_brain))
+# X_train_z = np.asarray(ex.getData(X_train, img_types, "2dz", inp_dim_2d, crbs=train_brain))
+# X_train_3d = np.asarray(ex.getData(X_train, img_types, "3d", inp_dim_3d, crbs=train_brain))
 
 print("size y_train",len(y_train))
 ## load test data
 
-ex = sc.Examples()
-ex.initilize(crbs=test_brain)
-ex.get_examples(step = step,output_type="classes")
-ex.balance(bal_test)
-tot = ex.split(1)
+# ex = sc.Examples()
+# ex.initilize(crbs=test_brain)
+# ex.get_examples(step = step,output_type="classes")
+# ex.balance(bal_test)
+# tot = ex.split(1)
 
-X_test, y_test = tot[0]
-X_test_x = np.asarray(ex.getData(X_test, img_types, "2dx", inp_dim_2d,crbs=test_brain))
-X_test_y = np.asarray(ex.getData(X_test, img_types, "2dy", inp_dim_2d,crbs=test_brain))
-X_test_z = np.asarray(ex.getData(X_test, img_types, "2dz", inp_dim_2d,crbs=test_brain))
-X_test_3d = np.asarray(ex.getData(X_test, img_types, "3d", inp_dim_3d,crbs=test_brain))
-
-
-# reshape it so its format is the requierd
-
-X_train_x = X_train_x.reshape(X_train_x.shape[0], inp_dim_2d, inp_dim_2d,len(img_types))
-X_train_y = X_train_y.reshape(X_train_y.shape[0], inp_dim_2d, inp_dim_2d,len(img_types))
-X_train_z = X_train_y.reshape(X_train_z.shape[0], inp_dim_2d, inp_dim_2d,len(img_types))
-X_train_3d = X_train_3d.reshape(X_train_3d.shape[0], inp_dim_3d, inp_dim_3d, inp_dim_3d,len(img_types))
+# X_test, y_test = tot[0]
+# X_test_x = np.asarray(ex.getData(X_test, img_types, "2dx", inp_dim_2d,crbs=test_brain))
+# X_test_y = np.asarray(ex.getData(X_test, img_types, "2dy", inp_dim_2d,crbs=test_brain))
+# X_test_z = np.asarray(ex.getData(X_test, img_types, "2dz", inp_dim_2d,crbs=test_brain))
+# X_test_3d = np.asarray(ex.getData(X_test, img_types, "3d", inp_dim_3d,crbs=test_brain))
 
 
-X_test_x = X_test_x.reshape(X_test_x.shape[0], inp_dim_2d, inp_dim_2d, len(img_types))
-X_test_y = X_test_y.reshape(X_test_y.shape[0], inp_dim_2d, inp_dim_2d, len(img_types))
-X_test_z = X_test_y.reshape(X_test_z.shape[0], inp_dim_2d, inp_dim_2d, len(img_types))
-X_test_3d = X_test_3d.reshape(X_test_3d.shape[0], inp_dim_3d, inp_dim_3d, inp_dim_3d,len(img_types))
+# # reshape it so its format is the requierd
+
+# X_train_x = X_train_x.reshape(X_train_x.shape[0], inp_dim_2d, inp_dim_2d,len(img_types))
+# X_train_y = X_train_y.reshape(X_train_y.shape[0], inp_dim_2d, inp_dim_2d,len(img_types))
+# X_train_z = X_train_y.reshape(X_train_z.shape[0], inp_dim_2d, inp_dim_2d,len(img_types))
+# X_train_3d = X_train_3d.reshape(X_train_3d.shape[0], inp_dim_3d, inp_dim_3d, inp_dim_3d,len(img_types))
+
+
+# X_test_x = X_test_x.reshape(X_test_x.shape[0], inp_dim_2d, inp_dim_2d, len(img_types))
+# X_test_y = X_test_y.reshape(X_test_y.shape[0], inp_dim_2d, inp_dim_2d, len(img_types))
+# X_test_z = X_test_y.reshape(X_test_z.shape[0], inp_dim_2d, inp_dim_2d, len(img_types))
+# X_test_3d = X_test_3d.reshape(X_test_3d.shape[0], inp_dim_3d, inp_dim_3d, inp_dim_3d,len(img_types))
 
 
 # prepare input for the 
-
+print("lo k tenemos", y_train.shape)
 input_shape_2d = (inp_dim_2d, inp_dim_2d, len(img_types))
 input_shape_3d = (inp_dim_3d, inp_dim_3d, inp_dim_3d, len(img_types))
 
@@ -239,6 +257,25 @@ final_model.save("../models/model_paralel.mdl")
 
 
 #model = load_model("../models/model_0.mdl")
+
+
+### test stuff
+
+tt = imm.ImageManager() # load training data
+tt.init(test_brain)
+tt.createSlices(step=step)
+tt.balance(bal_test)
+tt.split(1) # we will select the hole brain
+
+X_test_x = tt.getData(img_types, "2dx", inp_dim_2d)[0]
+y_test = X_test_x[1]
+X_test_x = X_test_x[0]
+
+X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0][0]
+
+X_test_z = tt.getData(img_types, "2dz", inp_dim_2d)[0][0]
+
+X_test_3d = tt.getData(img_types, "3d", inp_dim_3d)[0][0]
 
 
 def evaluate(model,X_test,y_test):

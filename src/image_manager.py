@@ -41,5 +41,13 @@ class ImageManager():
 				train_y = np.concatenate((train_y, tot[0][1]), axis=0)
 				test_x = np.concatenate((test_x, tot[1][0]), axis=0)
 				test_y = np.concatenate((test_y, tot[1][1]), axis=0)
+		tmp = 1-train_y
+		tmp = tmp[:, np.newaxis]
+		tmp2 = train_y[:, np.newaxis]
+		train_y = np.concatenate((tmp, tmp2), axis=1)
+		tmp = 1-test_y
+		tmp = tmp[:, np.newaxis]
+		tmp2 = test_y[:, np.newaxis]
+		test_y = np.concatenate((tmp, tmp2), axis=1)
 		return([(train_x,train_y),(test_x,test_y)])
 

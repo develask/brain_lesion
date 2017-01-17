@@ -29,8 +29,12 @@ class Brain():
 		standar = nib.load("../data/standars/MNI152_T1_1mm_first_brain_mask.nii.gz").get_data()
 		indexes = np.indices((int(self.lenx/step), int(self.leny/step), int(self.lenz/step)))
 		tmp = self.mask[::step,::step,::step]
-		if (tmp.shape[0] != indexes.shape[1]):
-			tmp = tmp[:-1,:-1,:-1]
+		while (tmp.shape[0] != indexes.shape[1]):
+			tmp = tmp[:-1,:,:]
+		while (tmp.shape[1] != indexes.shape[2]):
+			tmp = tmp[:,:-1,:]
+		while (tmp.shape[2] != indexes.shape[3]):
+			tmp = tmp[:,:,:-1]
 		length = tmp.shape[0]*tmp.shape[1]*tmp.shape[2]
 		self.result = np.concatenate((
 			indexes[0].reshape(1,length).T*step,
@@ -70,7 +74,7 @@ class Brain():
 				test_X = np.empty((self.test.shape[0], dim, dim))
 				i = 0
 				for x in self.test:
-					test[i,:,:] = margin[x[0]+mar-1,x[1]:x[1]+dim,x[2]:x[2]+dim]
+					test_X[i,:,:] = margin[x[0]+mar-1,x[1]:x[1]+dim,x[2]:x[2]+dim]
 					i+=1
 			if sample_type == "2dy":
 				train_X = np.empty((self.train.shape[0], dim, dim))
@@ -81,7 +85,7 @@ class Brain():
 				test_X = np.empty((self.test.shape[0], dim, dim))
 				i = 0
 				for x in self.test:
-					test[i,:,:] = margin[x[1]:x[1]+dim,x[0]+mar-1,x[2]:x[2]+dim]
+					test_X[i,:,:] = margin[x[1]:x[1]+dim,x[0]+mar-1,x[2]:x[2]+dim]
 					i+=1
 			if sample_type == "2dz":
 				train_X = np.empty((self.train.shape[0], dim, dim))
@@ -89,10 +93,10 @@ class Brain():
 				for x in self.train:
 					train_X[i,:,:] = margin[x[0]:x[0]+dim,x[1]:x[1]+dim,x[2]+mar-1]
 					i+=1
-				est_X = np.empty((self.test.shape[0], dim, dim))
+				test_X = np.empty((self.test.shape[0], dim, dim))
 				i = 0
 				for x in self.test:
-					test[i,:,:] = margin[x[1]:x[1]+dim,x[2]:x[2]+dim,x[0]+mar-1]
+					test_X[i,:,:] = margin[x[1]:x[1]+dim,x[2]:x[2]+dim,x[0]+mar-1]
 					i+=1
 			if sample_type == "3d":
 				train_X = np.empty((self.train.shape[0], dim, dim, dim))
@@ -111,7 +115,7 @@ class Brain():
 					result_test = test_X[:,:,:,:, np.newaxis]
 				else:
 					result_train = train_X[:,:,:, np.newaxis]
-					result_train = test_X[:,:,:, np.newaxis]
+					result_test = test_X[:,:,:, np.newaxis]
 			else:
 				result_train=np.insert(result_train, result_train.shape[-1], train_X, axis=len(result_train.shape)-1)
 				result_test=np.insert(result_test, result_test.shape[-1], test_X, axis=len(result_test.shape)-1)
