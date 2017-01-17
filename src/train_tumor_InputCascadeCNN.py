@@ -45,7 +45,7 @@ nb_epoch = 12
 inp_dim = 33
 inp_dim_bigger = 65
 
-step = 3
+step = 2
 # number of convolutional filters to use
 nb_filters = 32
 # size of pooling area for max pooling
@@ -53,34 +53,42 @@ pool_size = (4, 4)
 # convolution kernel size
 kernel_size = (3, 3)
 
-img_types = ["flair","anatomica", "FA","MD"]
+#balance prop
+bal_train = 10
+bal_test = 10
+
+img_types = ["flair","anatomica", "FA"]
+
+train_brain = ["tka003","tka004"]
+test_brain = ["tka002"]
 
 ex = sc.Examples()
-ex.initilize()
+ex.initilize(crbs=train_brain)
 ex.get_examples(step = step,output_type="classes")
 
-ex.valance(10)
+ex.balance(bal_train)
 
-tot = ex.split(0.9)
+tot = ex.split(1)
 
 X_train,y_train = tot[0]
-X_train_x = ex.getData(X_train, img_types, "2dy", inp_dim)
-X_train_bigger = ex.getData(X_train, img_types, "2dy", inp_dim_bigger)
+X_train_x = np.asarray(ex.getData(X_train, img_types, "2dy", inp_dim,crbs=train_brain))
+X_train_bigger = np.asarray(ex.getData(X_train, img_types, "2dy", inp_dim_bigger,crbs=train_brain))
 
-X_test, y_test = tot[1]
-X_test_x = ex.getData(X_test, img_types, "2dy", inp_dim)
-X_test_bigger = ex.getData(X_test, img_types, "2dy", inp_dim_bigger)
 
-X_train_x = np.asarray(X_train_x)
-X_train_bigger = np.asarray(X_train_bigger)
-y_train = np.asarray(y_train)
-X_test_x = np.asarray(X_test_x)
-X_test_bigger = np.asarray(X_test_bigger)
-y_test = np.asarray(y_test)
+ex = sc.Examples()
+ex.initilize(crbs=test_brain)
+ex.get_examples(step = step,output_type="classes")
 
-print("len trains_x",len(X_train_x),len(y_train))
-print("len trains_y",len(y_train))
-print("len tests",len(X_test),len(y_test))
+ex.balance(bal_test)
+
+tot = ex.split(1)
+
+
+
+X_test, y_test = tot[0]
+X_test_x = np.asarray(ex.getData(X_test, img_types, "2dy", inp_dim,crbs=test_brain))
+X_test_bigger = np.asarray(ex.getData(X_test, img_types, "2dy", inp_dim_bigger,crbs=test_brain))
+
 
 
 X_train_x = X_train_x.reshape(X_train_x.shape[0], inp_dim, inp_dim,len(img_types))
@@ -175,7 +183,7 @@ print("gonna train")
 # f.close()
 # quit()
 
-model.fit([X_train_bigger,X_train_x], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=1)
+model.fit([X_train_bigger,X_train_x], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
 model.save("../models/model_0.mdl")
 
 
