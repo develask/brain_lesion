@@ -45,7 +45,7 @@ nb_epoch = 12
 inp_dim = 33
 inp_dim_bigger = 65
 
-step = 2
+step = 3
 # number of convolutional filters to use
 nb_filters = 32
 # size of pooling area for max pooling

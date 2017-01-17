@@ -42,9 +42,9 @@ nb_classes = 2
 nb_epoch = 12
 
 # input image dimensions
-inp_dim_2d = 19
-inp_dim_3d = 9
-step = 2
+inp_dim_2d = 3
+inp_dim_3d = 11
+step = 11
 
 # number of convolutional filters to use
 nb_filters = 32
@@ -56,7 +56,19 @@ kernel_size_2d = (3, 3)
 kernel_size_3d = (3, 3, 3)
 
 # img types that will be taken as input
-img_types = ["flair", "FA", "anatomica"]
+# img_types = ["flair", "FA", "anatomica"]
+
+# exp1
+img_types = ["flair","FA"]
+# exp2
+# img_types = ["anatomica"]
+# # exp3
+# img_types = ["FA"]
+
+# # exp4
+# img_types = ["flair", "FA"]
+# # exp5
+# img_types = ["flair", "anatomica"]
 
 #train_data partition
 train_brain = ["tka003","tka004"]
@@ -215,7 +227,6 @@ print("Output shape after softmax (2 classes):", final_model.output_shape)
 
 
 
-
 final_model.compile(loss='binary_crossentropy',
               optimizer='adadelta',
               metrics=['accuracy'])
@@ -224,8 +235,6 @@ print("gonna train")
 
 cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
 final_model.save("../models/model_paralel.mdl")
-
-
 
 
 
