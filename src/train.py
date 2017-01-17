@@ -48,81 +48,82 @@ pool_size = (2, 2)
 # convolution kernel size
 kernel_size = (3, 3)
 
-img_types = ["flair","anatomica"]
 
-ex = sc.Examples()
-ex.initilize()
-ex.get_examples(step = step,output_type="classes")
+# img_types = ["flair","anatomica"]
 
-ex.valance(1)
+# ex = sc.Examples()
+# ex.initilize()
+# ex.get_examples(step = step,output_type="classes")
 
-tot = ex.split(0.8)
+# ex.valance(1)
 
-X_train,y_train = tot[0]
-X_train = ex.getData(X_train, img_types, "2dx", inp_dim, crbs = ["tka003"])
+# tot = ex.split(0.8)
 
-X_test, y_test = tot[1]
-X_test = ex.getData(X_test, img_types, "2dx", inp_dim)
+# X_train,y_train = tot[0]
+# X_train = ex.getData(X_train, img_types, "2dx", inp_dim, crbs = ["tka003"])
 
-X_train = np.asarray(X_train)
-y_train = np.asarray(y_train)
-X_test = np.asarray(X_test)
-y_test = np.asarray(y_test)
+# X_test, y_test = tot[1]
+# X_test = ex.getData(X_test, img_types, "2dx", inp_dim)
 
-print("len trains",len(X_train),len(y_train))
-print("len tests",len(X_test),len(y_test))
+# X_train = np.asarray(X_train)
+# y_train = np.asarray(y_train)
+# X_test = np.asarray(X_test)
+# y_test = np.asarray(y_test)
 
-
-
-
-
-# print(ex.pairs[322])
-# print("number of examples",len(ex.pairs))
+# print("len trains",len(X_train),len(y_train))
+# print("len tests",len(X_test),len(y_test))
 
 
 
-# print("number of positive after selection: ",k)
 
 
-# img_out = nib.load("../data/mask/normalized/tka003_lesion_mask_norm.nii.gz")
-# data_out = imf.OurImage(img_out.get_data())
-
-# k=0
-# for x in data_out:
-# 	if x >0:
-# 		k+=1
-
-# img_out = nib.load("../data/mask/normalized/tka004_lesion_mask_norm.nii.gz")
-# data_out = imf.OurImage(img_out.get_data())
-
-
-# for x in data_out:
-# 	if x >0:
-# 		k+=1
-
-# print("number of positive before selection: ",k)
-
-
-X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim,len(img_types))
-# unselect this for 3d images
-#X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim, inp_dim,1)
-
-
-X_test = X_test.reshape(X_test.shape[0], inp_dim, inp_dim, len(img_types))
-input_shape = (inp_dim, inp_dim, len(img_types))
+# # print(ex.pairs[322])
+# # print("number of examples",len(ex.pairs))
 
 
 
-# X_train = X_train.astype('float32')
-# X_test = X_test.astype('float32')
-# X_train /= 255
-# X_test /= 255
-print('X_train shape:', X_train.shape)
-print(X_train.shape[0], 'train samples')
-print(X_test.shape[0], 'test samples')
+# # print("number of positive after selection: ",k)
 
-print(len(y_train),len(X_train))
-print(y_test)
+
+# # img_out = nib.load("../data/mask/normalized/tka003_lesion_mask_norm.nii.gz")
+# # data_out = imf.OurImage(img_out.get_data())
+
+# # k=0
+# # for x in data_out:
+# # 	if x >0:
+# # 		k+=1
+
+# # img_out = nib.load("../data/mask/normalized/tka004_lesion_mask_norm.nii.gz")
+# # data_out = imf.OurImage(img_out.get_data())
+
+
+# # for x in data_out:
+# # 	if x >0:
+# # 		k+=1
+
+# # print("number of positive before selection: ",k)
+
+
+# X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim,len(img_types))
+# # unselect this for 3d images
+# #X_train = X_train.reshape(X_train.shape[0], inp_dim, inp_dim, inp_dim,1)
+
+
+# X_test = X_test.reshape(X_test.shape[0], inp_dim, inp_dim, len(img_types))
+# input_shape = (inp_dim, inp_dim, len(img_types))
+
+
+
+# # X_train = X_train.astype('float32')
+# # X_test = X_test.astype('float32')
+# # X_train /= 255
+# # X_test /= 255
+# print('X_train shape:', X_train.shape)
+# print(X_train.shape[0], 'train samples')
+# print(X_test.shape[0], 'test samples')
+
+# print(len(y_train),len(X_train))
+# print(y_test)
 
 # y_train2 = []
 # y_test2 = []
@@ -173,7 +174,7 @@ print(y_test)
 
 
 model = Sequential()
-
+input_shape=(15,15,3)
 print("Input shape to the network:", input_shape)
 model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1],
                         border_mode='valid',
