@@ -60,7 +60,7 @@ class ImageManager():
 		size = 0
 		size_t = sys.getsizeof(np.array([0.5]))
 		for cr in self.images:
-			size += cr.train + cr.test
+			size += cr.train.shape[0] + cr.test.shape[0]
 		size *= dim
 		size *= dim
 		size *= len(img_types)
