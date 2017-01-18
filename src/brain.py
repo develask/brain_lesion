@@ -25,16 +25,17 @@ class Brain():
 				except:
 					pass
 
-	def createSlices(self, step):
+	def createSlices(self, step, start = 0):
 		standar = nib.load("../data/standars/MNI152_T1_1mm_first_brain_mask.nii.gz").get_data()
 		indexes = np.indices((int(self.lenx/step), int(self.leny/step), int(self.lenz/step)))
-		tmp = self.mask[::step,::step,::step]
+		tmp = self.mask[start::step,start::step,start::step]
 		while (tmp.shape[0] != indexes.shape[1]):
 			tmp = tmp[:-1,:,:]
 		while (tmp.shape[1] != indexes.shape[2]):
 			tmp = tmp[:,:-1,:]
 		while (tmp.shape[2] != indexes.shape[3]):
 			tmp = tmp[:,:,:-1]
+		indexes = indexes + start
 		length = tmp.shape[0]*tmp.shape[1]*tmp.shape[2]
 		self.result = np.concatenate((
 			indexes[0].reshape(1,length).T*step,
