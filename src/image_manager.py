@@ -66,7 +66,7 @@ class ImageManager():
 		size *= len(img_types)
 		size *= size_t
 
-		max_ram = 2 * 1024 * 1024 # 2GB ram
+		max_ram = 2 * 1024 * 1024 * 1024# 2GB ram
 		mem = virtual_memory()
 		mem = mem.total - max_ram
 		self.mem += size
