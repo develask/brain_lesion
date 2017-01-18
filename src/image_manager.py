@@ -56,7 +56,7 @@ class ImageManager():
 		test_y = np.concatenate((tmp, tmp2), axis=1)
 		return([(train_x,train_y),(test_x,test_y)])
 
-	def memoryAvilable(img_types, sample_type, dim):
+	def memoryAvilable(self, img_types, sample_type, dim):
 		size = 0
 		size_t = sys.getsizeof(np.array([0.5]))
 		for cr in self.images:
