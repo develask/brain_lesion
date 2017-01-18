@@ -29,6 +29,7 @@ class ImageManager():
 			im.split(portion)
 
 	def getData(self, img_types, sample_type, dim):
+		self.memoryAvilable(img_types, sample_type, dim)
 		train_x = None
 		train_y = None
 		test_x = None
