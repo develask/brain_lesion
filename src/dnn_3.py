@@ -35,19 +35,19 @@ import tensorflow as tf
 
 #############################################
 
-model_name	= "paralel_v0"
+model_name	= "paralel_v3"
 
 batch_size = 128
 nb_classes = 2
 nb_epoch = 12
 
 # input image dimensions
-inp_dim_2d = 35
-inp_dim_3d = 11
-step = 7
+inp_dim_2d = 63
+inp_dim_3d = 15
+step = 17
 
 # number of convolutional filters to use
-nb_filters = 32
+nb_filters = 35
 # size of pooling area for max pooling
 pool_size_2d = (2, 2)
 pool_size_3d = (2, 2, 2)
@@ -59,7 +59,7 @@ kernel_size_3d = (3, 3, 3)
 # img_types = ["flair", "FA", "anatomica"]
 
 # exp1
-img_types = ["flair","FA"]
+img_types = ["flair"]
 # exp2
 # img_types = ["anatomica"]
 # # exp3
@@ -154,12 +154,23 @@ model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
                         input_shape=input_shape_2d))
 model_x.add(Activation('relu'))
 print("Output shape of 1st convolution (2d):", model_x.output_shape)
-model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
+model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
+                        border_mode='valid',
+                        input_shape=input_shape_2d))
 model_x.add(Activation('relu'))
 print("Output shape of 2nd convolution (2d):", model_x.output_shape)
 model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
+model_x.add(MaxPooling2D(pool_size=pool_size_2d))
+model_x.add(Dropout(0.25))
+print("Output shape after max pooling (2d):", model_x.output_shape)
 model_x.add(Activation('relu'))
 print("Output shape of 3rd convolution (2d):", model_x.output_shape)
+model_x.add(MaxPooling2D(pool_size=pool_size_2d))
+model_x.add(Dropout(0.25))
+print("Output shape after max pooling (2d):", model_x.output_shape)
+model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
+model_x.add(Activation('relu'))
+print("Output shape of 4th convolution (2d):", model_x.output_shape)
 model_x.add(MaxPooling2D(pool_size=pool_size_2d))
 model_x.add(Dropout(0.25))
 print("Output shape after max pooling (2d):", model_x.output_shape)
@@ -176,8 +187,19 @@ model_y.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
                         input_shape=input_shape_2d))
 model_y.add(Activation('relu'))
 
-model_y.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
+model_y.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
+                        border_mode='valid',
+                        input_shape=input_shape_2d))
 model_y.add(Activation('relu'))
+
+model_y.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
+model_y.add(MaxPooling2D(pool_size=pool_size_2d))
+model_y.add(Dropout(0.25))
+
+model_y.add(Activation('relu'))
+
+model_y.add(MaxPooling2D(pool_size=pool_size_2d))
+model_y.add(Dropout(0.25))
 
 model_y.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
 model_y.add(Activation('relu'))
@@ -189,6 +211,7 @@ model_y.add(Flatten())
 
 
 
+
 ## paralel NN, z
 model_z = Sequential()
 
@@ -197,8 +220,19 @@ model_z.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
                         input_shape=input_shape_2d))
 model_z.add(Activation('relu'))
 
-model_z.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
+model_z.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
+                        border_mode='valid',
+                        input_shape=input_shape_2d))
 model_z.add(Activation('relu'))
+
+model_z.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
+model_z.add(MaxPooling2D(pool_size=pool_size_2d))
+model_z.add(Dropout(0.25))
+
+model_z.add(Activation('relu'))
+
+model_z.add(MaxPooling2D(pool_size=pool_size_2d))
+model_z.add(Dropout(0.25))
 
 model_z.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
 model_z.add(Activation('relu'))
@@ -207,6 +241,7 @@ model_z.add(MaxPooling2D(pool_size=pool_size_2d))
 model_z.add(Dropout(0.25))
 
 model_z.add(Flatten())
+
 
 
 
@@ -223,9 +258,13 @@ model_3d.add(Convolution3D(nb_filters,kernel_size_3d[0], kernel_size_3d[1], kern
 						 border_mode='valid'))
 model_3d.add(Activation('relu'))
 print("Output shape of 2nd convolution (3d):", model_3d.output_shape)
-#model_3d.add(MaxPooling3D(pool_size=pool_size_3d))
-#model_3d.add(Dropout(0.25))
-#print("Output shape after max pooling (3d):", model_3d.output_shape)
+model_3d.add(Convolution3D(nb_filters,kernel_size_3d[0], kernel_size_3d[1], kernel_size_3d[2],
+						 border_mode='valid'))
+model_3d.add(Activation('relu'))
+print("Output shape of 3nrd convolution (3d):", model_3d.output_shape)
+model_3d.add(MaxPooling3D(pool_size=pool_size_3d))
+model_3d.add(Dropout(0.25))
+print("Output shape after max pooling (3d):", model_3d.output_shape)
 model_3d.add(Flatten())
 print("Output shape after flatten (3d):", model_3d.output_shape)
 
@@ -248,7 +287,7 @@ print("Output shape after softmax (2 classes):", final_model.output_shape)
 final_model.compile(loss='binary_crossentropy',
               optimizer='adadelta',
               metrics=['accuracy'])
-
+quit()
 print("gonna train")
 
 cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
