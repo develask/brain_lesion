@@ -5,7 +5,6 @@ import sys
 
 import re
 from copy import deepcopy
-import image_functions as imf
 
 
 #img = nib.load("datos/004/tka004_lesion_mask.nii.gz")
@@ -38,12 +37,19 @@ def std_data(data,valor_min=0,valor_max=1):
 	len_2 = len(data[0])
 	len_3 = len(data[0][0])
 
-	for i in range(len_1):
-		for j in range(len_2):
-			for k in range(len_3):
-				data[i][j][k] = (float(data[i][j][k]) - (min_pre - valor_min)) * (valor_max-valor_min) / (max_pre-min_pre)
+	a = (min_pre - valor_min)
+	b = (valor_max - valor_min)
+	c = (max_pre - min_pre)
+
+	data = data - a
+	data = data * b
+	data = data / c
+	return(data)
 
 ind=0
+def std_data_mask(data):
+	data = data > 0
+	return(data)
 def getImgType(filename):
 	#tipo = ""
 	#for i in range(len(filename)):
@@ -81,16 +87,20 @@ for image in images:
 		print("i'm trying...")
 		img = nib.load("../data/raw/" + dir_name + "/" + image)
 		print("try finished")
-		data_tmp = img.get_data()
-		data = imf.OurImage(data_tmp,"")
-		std_data(data.data)
-		img = nib.Nifti1Image(data.data, np.eye(4))
 		tipo = getImgType(image)
+		data_tmp = img.get_data()
+		data_tmp.astype(float)
+		if (tipo == "mask"):
+			data_tmp = std_data(data_tmp)
+			data_tmp = std_data_mask(data_tmp)
+		else:
+			data_tmp = std_data(data_tmp)
+		img = nib.Nifti1Image(data_tmp, np.eye(4))
 		#nib.save(img,"../data/tipo/"+image[0:-8]+"_norm.nii.gz")
 		print("../data/" + tipo + "/" + image[0:-7] + "_norm.nii.gz")
 		nib.save(img, "../data/" + tipo + "/normalized/" + image[0:-7] + "_norm.nii.gz")
 	except Exception as e:
-		print e
+		print(e)
 		print("EOFError in IMAGE:",image)
 		print("passing...")
 		continue

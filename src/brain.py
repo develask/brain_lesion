@@ -5,7 +5,7 @@ import os
 class Brain():
 	def __init__(self, brain):
 		self.name = brain
-		self.mask = nib.load("../data/mask/normalized/" + brain + "_lesion_mask_norm.nii.gz").get_data()>0
+		self.mask = nib.load("../data/mask/normalized/" + brain + "_lesion_mask_norm.nii.gz").get_data()
 		self.lenx = len(self.mask)
 		self.leny = len(self.mask[0])
 		self.lenz = len(self.mask[0][0])
