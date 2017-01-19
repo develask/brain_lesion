@@ -48,7 +48,7 @@ nb_epoch = 12
 # input image dimensions
 inp_dim_2d = 35
 inp_dim_3d = 11
-step = 7
+step = 15
 
 # number of convolutional filters to use
 nb_filters = 45
@@ -91,21 +91,40 @@ bal_test = 10
 # tot = ex.split(1)
 
 tr = imm.ImageManager() # load training data
-tr.init(train_brain)
-tr.createSlices(step=step)
-tr.balance(bal_train)
-tr.split(1) # we will select the hole brain
+# tr.init(train_brain)
+# tr.createSlices(step=step)
+# tr.balance(bal_train)
+# tr.split(1) # we will select the hole brain
 
-X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
-y_train = X_train_x[1]
-X_train_x = X_train_x[0]
+# X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
+# y_train = X_train_x[1]
+# X_train_x = X_train_x[0]
 
-X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
+# X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
 
-X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
+# X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
 
-X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
+# X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
 
+
+
+def next():
+	tr.reset()
+	tr.init(train_brain)
+	tr.createSlices(step=step)
+	tr.balance(bal_train)
+	tr.split(1) # we will select the hole brain
+
+	X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
+	y_train = X_train_x[1]
+	X_train_x = X_train_x[0]
+
+	X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
+
+	X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
+
+	X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
+	return([X_train_x,X_train_y, X_train_z, X_train_3d], y_train)
 
 
 # X_train,y_train = tot[0]
@@ -269,6 +288,8 @@ final_model.compile(loss='binary_crossentropy',
 quit()
 print("gonna train")
 
+final_model.fit_generator()
+
 cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
 final_model.save("../models/model_" + model_name + ".mdl")
 
@@ -276,7 +297,7 @@ final_model.save("../models/model_" + model_name + ".mdl")
 
 #model = load_model("../models/model_0.mdl")
 
-del tr
+
 ### test stuff
 
 tt = imm.ImageManager() # load training data

@@ -31,12 +31,7 @@ class Brain():
 		indexes *= step
 		ran = np.random.randint(step, size=indexes.shape)
 
-		print(standar.shape)
-		print(np.max(indexes))
-
 		indexes += ran
-
-		print(np.max(indexes))
 
 		length = indexes[0].shape[0]*indexes[0].shape[1]*indexes[0].shape[2]
 
