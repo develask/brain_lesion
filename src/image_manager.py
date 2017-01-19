@@ -70,8 +70,8 @@ class ImageManager():
 		mem = virtual_memory()
 		mem = mem.total - max_ram
 		self.mem += size
-		print("Needed Memory:", self.mem)
-		print("Avilable Memory:", mem)
+		print("Needed Memory:", self.mem/(1024**3))
+		print("Avilable Memory:", mem/(1024**3))
 		if self.mem>mem:
 			raise Exception("Need more memory: (", self.mem,"/",mem,")")
 

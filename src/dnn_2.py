@@ -71,13 +71,11 @@ img_types = ["flair","FA"]
 # img_types = ["flair", "anatomica"]
 
 #train_data partition
-train_brain = ["tka002","tka003","tka005","tka006","tka009","tka010","tka012","tka013","tka016","tka017","tka019","tka020"]
-test_brain = ["tka004","tka007","tka011","tka015","tka018","tka021"]
+train_brain = ["tka002","tka003","tka004","tka005","tka006","tka009","tka010","tka011","tka012","tka013","tka016","tka017","tka019","tka020"]
+test_brain = ["tka007","tka015","tka018","tka021"]
 
 #balance proportion
 bal_train = 10
-bal_test = 100
-
 ## load training data
 
 # ex = sc.Examples()
@@ -290,25 +288,6 @@ final_model.save("../models/model_" + model_name + ".mdl")
 #model = load_model("../models/model_0.mdl")
 del tr
 
-### test stuff
-
-tt = imm.ImageManager() # load training data
-tt.init(test_brain)
-tt.createSlices(step=step+1)
-tt.balance(bal_test)
-tt.split(1) # we will select the hole brain
-
-X_test_x = tt.getData(img_types, "2dx", inp_dim_2d)[0]
-y_test = X_test_x[1]
-X_test_x = X_test_x[0]
-
-X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0][0]
-
-X_test_z = tt.getData(img_types, "2dz", inp_dim_2d)[0][0]
-
-X_test_3d = tt.getData(img_types, "3d", inp_dim_3d)[0][0]
-
-
 def evaluate(model,X_test,y_test):
 	y_pred = model.predict(X_test)
 	mat = [[0,0],[0,0]] # [[TP,FP],[FN,TN]]
@@ -327,12 +306,40 @@ def evaluate(model,X_test,y_test):
 
 	TPR = mat[0][0] / (mat[0][0] + mat[1][0])
 	TNR = mat[1][1] / (mat[1][1] + mat[0][1])
-	return(mat,TPR,TNR)		
+	return(mat,TPR,TNR)
 
-score = evaluate(final_model,[X_test_x, X_test_y, X_test_z, X_test_3d],y_test)
-print(score[0][0])
-print(score[0][1])
-print("TPR:", score[1])
-print("TNR:", score[2])
+### test stuff
+
+bal_test = 10
+
+segi = True
+while segi:
+	try:
+		tt = imm.ImageManager() # load training data
+		tt.init(test_brain)
+		tt.createSlices(step=step)
+		tt.balance(bal_test)
+		tt.split(1) # we will select the hole brain
+
+		X_test_x = tt.getData(img_types, "2dx", inp_dim_2d)[0]
+		y_test = X_test_x[1]
+		X_test_x = X_test_x[0]
+
+		X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0][0]
+
+		X_test_z = tt.getData(img_types, "2dz", inp_dim_2d)[0][0]
+
+		X_test_3d = tt.getData(img_types, "3d", inp_dim_3d)[0][0]
+
+		score = evaluate(final_model,[X_test_x, X_test_y, X_test_z, X_test_3d],y_test)
+		print "###############################################"
+		print "balance:", bal_test, "(", y_test.shape[0], ")"
+		print score[0][0]
+		print score[0][1]
+		print "TPR:", score[1]
+		print "TNR:", score[2]
+		bal_test *=10
+	except Exception, e:
+		segi = False
 
 
