@@ -16,9 +16,9 @@ class ImageManager():
 		for im in images:
 			self.images.append(br.Brain(im))
 
-	def createSlices(self, step = 2, start = 0):
+	def createSlices(self, step = 2):
 		for im in self.images:
-			im.createSlices(step, start)
+			im.createSlices(step)
 
 	def balance(self, bal = 10):
 		for im in self.images:
