@@ -71,8 +71,8 @@ img_types = ["flair"]
 # img_types = ["flair", "anatomica"]
 
 #train_data partition
-train_brain = ["tka003","tka004"]
-test_brain = ["tka002"]
+train_brain = ["tka002","tka003","tka005","tka006","tka009","tka010","tka012","tka013","tka016","tka017","tka019","tka020"]
+test_brain = ["tka004","tka007","tka011","tka015","tka018","tka021"]
 
 #balance proportion
 bal_train = 10
@@ -287,7 +287,7 @@ print("Output shape after softmax (2 classes):", final_model.output_shape)
 final_model.compile(loss='binary_crossentropy',
               optimizer='adadelta',
               metrics=['accuracy'])
-quit()
+
 print("gonna train")
 
 cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
@@ -296,7 +296,7 @@ final_model.save("../models/model_" + model_name + ".mdl")
 
 
 #model = load_model("../models/model_0.mdl")
-
+del tr
 
 ### test stuff
 
