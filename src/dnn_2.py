@@ -76,7 +76,7 @@ test_brain = ["tka004","tka007","tka011","tka015","tka018","tka021"]
 
 #balance proportion
 bal_train = 10
-bal_test = 10
+bal_test = 100
 
 ## load training data
 
@@ -294,7 +294,7 @@ del tr
 
 tt = imm.ImageManager() # load training data
 tt.init(test_brain)
-tt.createSlices(step=step)
+tt.createSlices(step=step+1)
 tt.balance(bal_test)
 tt.split(1) # we will select the hole brain
 

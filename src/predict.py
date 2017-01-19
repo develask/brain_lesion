@@ -6,8 +6,13 @@ import math
 import brain as br
 
 
+<<<<<<< HEAD
 modelo_file = "../models/model_paralel.mdl"
 result_path = "../results/004_dnn1_v2.nii.gz"
+=======
+modelo_file = "../models/model_paralel_v1.mdl"
+result_path = "../results/new_image2.nii.gz"
+>>>>>>> 284fc04dd5ddd147f3fc42f715719bc354e41ffd
 
 model = load_model(modelo_file)
 
