@@ -6,7 +6,7 @@ import math
 import brain as br
 
 
-modelo_file = "../models/model_paralel.mdl"
+modelo_file = "../models/model_paralel_v1.mdl"
 result_path = "../results/new_image2.nii.gz"
 
 model = load_model(modelo_file)
@@ -24,7 +24,7 @@ final = brain.result.shape[0]
 inicio = 0
 fin = int(final*0.01)
 step = fin
-print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
+print fin*100/float(final),"%                 ",fin," / ", final,
 while True:
 	brain.train = brain.result[inicio:fin]
 	brain.test = brain.result[0:0]
@@ -45,7 +45,7 @@ while True:
 	new_im = np.zeros(brain.mask.shape)
 	for a in brain.train:
 		new_im[a[0],a[1],a[2]] = a[4]
-	print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
+	print fin*100/float(final),"%                 ",fin," / ", final,
 	inicio += step
 	fin += step
 	if fin>final:

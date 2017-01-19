@@ -48,7 +48,7 @@ nb_epoch = 12
 # input image dimensions
 inp_dim_2d = 35
 inp_dim_3d = 11
-step = 7
+step = 8
 
 # number of convolutional filters to use
 nb_filters = 45
@@ -266,7 +266,7 @@ print("Output shape after softmax (2 classes):", final_model.output_shape)
 final_model.compile(loss='binary_crossentropy',
               optimizer='adadelta',
               metrics=['accuracy'])
-quit()
+# quit()
 print("gonna train")
 
 cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
