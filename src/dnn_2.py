@@ -317,7 +317,7 @@ while segi:
 	try:
 		tt = imm.ImageManager() # load training data
 		tt.init(test_brain)
-		tt.createSlices(step=step)
+		tt.createSlices(step=3)
 		tt.balance(bal_test)
 		tt.split(1) # we will select the hole brain
 
@@ -332,13 +332,13 @@ while segi:
 		X_test_3d = tt.getData(img_types, "3d", inp_dim_3d)[0][0]
 
 		score = evaluate(final_model,[X_test_x, X_test_y, X_test_z, X_test_3d],y_test)
-		print "###############################################"
-		print "balance:", bal_test, "(", y_test.shape[0], ")"
-		print score[0][0]
-		print score[0][1]
-		print "TPR:", score[1]
-		print "TNR:", score[2]
-		bal_test *=10
+		print ("###############################################")
+		print "balance:", bal_test, "(", y_test.shape[0], ")")
+		print(Iscore[0][0])
+		print(score[0][1])
+		print("TPR:", score[1])
+		print("TNR:", score[2])
+		bal_test +=10
 	except Exception, e:
 		segi = False
 

@@ -56,7 +56,7 @@ class ImageManager():
 		test_y = np.concatenate((tmp, tmp2), axis=1)
 		return([(train_x,train_y),(test_x,test_y)])
 
-	def memoryAvilable(self, img_types, sample_type, dim):
+	def memoryAvilable(self, img_types, sample_type, dim, p = True):
 		size = 0
 		size_t = sys.getsizeof(np.array([0.5]))
 		for cr in self.images:
@@ -70,8 +70,9 @@ class ImageManager():
 		mem = virtual_memory()
 		mem = mem.total - max_ram
 		self.mem += size
-		print("Needed Memory:", self.mem/(1024**3))
-		print("Avilable Memory:", mem/(1024**3))
+		if p:
+			print("Needed Memory:", self.mem/(1024**3))
+			print("Avilable Memory:", mem/(1024**3))
 		if self.mem>mem:
 			raise Exception("Need more memory: (", self.mem,"/",mem,")")
 
