@@ -75,12 +75,12 @@ img_types = ["flair","FA","anatomica"]
 # img_types = ["flair", "anatomica"]
 
 #train_data partition
-train_brain = ["tka002","tka003","tka005","tka006","tka009","tka010","tka012","tka013","tka016","tka017","tka019","tka020"]
-test_brain = ["tka004","tka007","tka011","tka015","tka018","tka021"]
+train_brain = ["tka002","tka003","tka004","tka005","tka006","tka009","tka010","tka011","tka012","tka013","tka016","tka017","tka019","tka020"]
+test_brain = ["tka007","tka015","tka018","tka021"]
 
 #balance proportion
 bal_train = 10
-bal_test = 10
+bal_test = 200
 
 ## load training data
 
@@ -282,7 +282,7 @@ del tr
 tt = imm.ImageManager() # load training data
 tt.init(test_brain)
 tt.createSlices(step=step)
-tt.balance(bal_test)
+tt.balance(10)
 tt.split(1) # we will select the hole brain
 
 X_test_x = tt.getData(img_types, "2dx", inp_dim_2d)[0]

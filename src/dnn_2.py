@@ -44,7 +44,7 @@ nb_epoch = 12
 # input image dimensions
 inp_dim_2d = 43
 inp_dim_3d = 13
-step = 17
+step = 8
 
 # number of convolutional filters to use
 nb_filters = 40
@@ -76,6 +76,7 @@ test_brain = ["tka007","tka015","tka018","tka021"]
 
 #balance proportion
 bal_train = 10
+bal_test = 200
 ## load training data
 
 # ex = sc.Examples()
@@ -310,36 +311,29 @@ def evaluate(model,X_test,y_test):
 
 ### test stuff
 
-bal_test = 10
+tt = imm.ImageManager() # load training data
+tt.init(test_brain)
+tt.createSlices(step=10)
+tt.balance(bal_test)
+tt.split(1) # we will select the hole brain
 
-segi = True
-while segi:
-	try:
-		tt = imm.ImageManager() # load training data
-		tt.init(test_brain)
-		tt.createSlices(step=3)
-		tt.balance(bal_test)
-		tt.split(1) # we will select the hole brain
+X_test_x = tt.getData(img_types, "2dx", inp_dim_2d)[0]
+y_test = X_test_x[1]
+X_test_x = X_test_x[0]
 
-		X_test_x = tt.getData(img_types, "2dx", inp_dim_2d)[0]
-		y_test = X_test_x[1]
-		X_test_x = X_test_x[0]
+X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0][0]
 
-		X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0][0]
+X_test_z = tt.getData(img_types, "2dz", inp_dim_2d)[0][0]
 
-		X_test_z = tt.getData(img_types, "2dz", inp_dim_2d)[0][0]
+X_test_3d = tt.getData(img_types, "3d", inp_dim_3d)[0][0]
 
-		X_test_3d = tt.getData(img_types, "3d", inp_dim_3d)[0][0]
+score = evaluate(final_model,[X_test_x, X_test_y, X_test_z, X_test_3d],y_test)
+print ("###############################################")
+print("balance:", bal_test, "(", y_test.shape[0], ")")
+print(score[0][0])
+print(score[0][1])
+print("TPR:", score[1])
+print("TNR:", score[2])
 
-		score = evaluate(final_model,[X_test_x, X_test_y, X_test_z, X_test_3d],y_test)
-		print ("###############################################")
-		print "balance:", bal_test, "(", y_test.shape[0], ")")
-		print(Iscore[0][0])
-		print(score[0][1])
-		print("TPR:", score[1])
-		print("TNR:", score[2])
-		bal_test +=10
-	except Exception, e:
-		segi = False
 
 
