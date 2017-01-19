@@ -11,11 +11,11 @@ result_path = "../results/new_image2.nii.gz"
 
 model = load_model(modelo_file)
 
-brain_id = "tka002"
+brain_id = "tka004"
 
 inp_dim_2d = 35
 inp_dim_3d = 11
-img_types = ["flair","FA"]
+img_types = ["flair","FA","anatomica"]
 
 brain = br.Brain(brain_id)
 brain.createSlices(step=1)
@@ -53,7 +53,7 @@ while True:
 	if inicio > final:
 		break
 	
-print(5)
+
 new_image = nib.Nifti1Image(new_im,  np.eye(4))
 nib.save(new_image, result_path)
 
