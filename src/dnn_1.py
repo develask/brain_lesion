@@ -270,4 +270,29 @@ for i in range(len(brains)/4):
 	print("TNR:", score[2])
 	del tt
 
+print("")
+print("########################################")
+print("###         Total (Average)          ###")
+print("########################################")
+TP = 0
+TN = 0
+FP = 0
+FN = 0
+for el in res:
+	TP += el[0][0][0]
+	TN += el[0][1][1]
+	FP += el[0][0][1]
+	FN += el[0][1][0]
+TP = TP / float(len(res))
+TN = TN / float(len(res))
+FP = FP / float(len(res))
+FN = FN / float(len(res))
+print([TP,FP], ["TP","FP"])
+print([FN,TN], ["FN","TN"])
+print("")
+print("Accuracy:", TP+TN)
+print("TPR:", TP / float(TP + FN))
+print("TNR:", TN / float(TN + FP))
+
+
 
