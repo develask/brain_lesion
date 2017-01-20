@@ -29,7 +29,7 @@ class ImageManager():
 			im.split(portion)
 
 	def getData(self, img_types, sample_type, dim, p=True):
-		self.memoryAvilable(img_types, sample_type, dim,p)
+		self.memoryAvailable(img_types, sample_type, dim,p)
 		train_x = None
 		train_y = None
 		test_x = None
@@ -56,7 +56,7 @@ class ImageManager():
 		test_y = np.concatenate((tmp, tmp2), axis=1)
 		return([(train_x,train_y),(test_x,test_y)])
 
-	def memoryAvilable(self, img_types, sample_type, dim, p = True):
+	def memoryAvailable(self, img_types, sample_type, dim, p = True):
 		size = 0
 		size_t = sys.getsizeof(np.array([0.5]))
 		for cr in self.images:
