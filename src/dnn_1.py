@@ -31,7 +31,7 @@ import image_manager as imm
 import gc
 
 import tensorflow as tf
-    
+import json
 
 #############################################
 
@@ -44,7 +44,6 @@ model_name	= "paralel_v1"
 batch_size = 128
 nb_classes = 2
 nb_epoch = 30
-
 # input image dimensions
 inp_dim_2d = 35
 inp_dim_3d = 11
@@ -196,10 +195,10 @@ def evaluate(model,X_test,y_test):
 			mat[1][0] += y_pred[i][0] #FN
 			mat[0][0] += y_pred[i][1] #TP
 
-	mat[0][0] /= len(y_pred)
-	mat[0][1] /= len(y_pred)
-	mat[1][0] /= len(y_pred)
-	mat[1][1] /= len(y_pred)
+	# mat[0][0] /= len(y_pred)
+	# mat[0][1] /= len(y_pred)
+	# mat[1][0] /= len(y_pred)
+	# mat[1][1] /= len(y_pred)
 
 	TPR = mat[0][0] / (mat[0][0] + mat[1][0])
 	TNR = mat[1][1] / (mat[1][1] + mat[0][1])
@@ -234,18 +233,18 @@ for i in range(len(brains)/4):
 	              metrics=['accuracy'])
 
 	cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
-	final_model.save("../models/model_" + model_name +"_"+ it + ".mdl")
+	final_model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
 
-
+	with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
+		tf.write(json.dumps(cv.history))
 
 	#model = load_model("../models/model_0.mdl")
-
-	del tr
+	tr.reset()
 	### test stuff
 
 	tt = imm.ImageManager() # load training data
 	tt.init(test_brain)
-	tt.createSlices(step=step)
+	tt.createSlices(step=step+1)
 	tt.balance(bal_test)
 	tt.split(1) # we will select the hole brain
 
@@ -263,12 +262,12 @@ for i in range(len(brains)/4):
 	res.append((score,train_brain, test_brain))
 	print("###########################################")
 	print("Iteration:",i)
-	print("balance:", bal_test, "(", y_test.shape[0], ")")s
+	print("balance:", bal_test, "(", y_test.shape[0], ")")
 	print(score[0][0])
 	print(score[0][1])
 	print("TPR:", score[1])
 	print("TNR:", score[2])
-	del tt
+	tt.reset()
 
 print("")
 print("########################################")
@@ -279,14 +278,15 @@ TN = 0
 FP = 0
 FN = 0
 for el in res:
-	TP += el[0][0][0]
-	TN += el[0][1][1]
-	FP += el[0][0][1]
-	FN += el[0][1][0]
-TP = TP / float(len(res))
-TN = TN / float(len(res))
-FP = FP / float(len(res))
-FN = FN / float(len(res))
+	TP += el[0][0][0][0]
+	TN += el[0][0][1][1]
+	FP += el[0][0][0][1]
+	FN += el[0][0][1][0]
+total = TP+TN+FP+FN
+TP = TP / float(total)
+TN = TN / float(total)
+FP = FP / float(total)
+FN = FN / float(total)
 print([TP,FP], ["TP","FP"])
 print([FN,TN], ["FN","TN"])
 print("")
