@@ -215,6 +215,7 @@ bal_train = 10
 bal_test = 200
 
 tr = imm.ImageManager() # load training data
+tt = imm.ImageManager() # load training data
 res = []
 def evaluate(model,X_test,y_test):
 	y_pred = model.predict(X_test)
@@ -267,14 +268,14 @@ for i in range(len(brains)/4):
 	cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
 	final_model.save("../models/model_" + model_name +"_"+ it + ".mdl")
 
-
+	with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
+		tf.write(json.dumps(cv.history))
 
 	#model = load_model("../models/model_0.mdl")
 
-	del tr
+	tr.reset()
 	### test stuff
-
-	tt = imm.ImageManager() # load training data
+	tt.reset()
 	tt.init(test_brain)
 	tt.createSlices(step=step)
 	tt.balance(bal_test)
@@ -299,7 +300,7 @@ for i in range(len(brains)/4):
 	print(score[0][1])
 	print("TPR:", score[1])
 	print("TNR:", score[2])
-	del tt
+	tt.reset()
 
 
 print("")
@@ -311,14 +312,15 @@ TN = 0
 FP = 0
 FN = 0
 for el in res:
-	TP += el[0][0][0]
-	TN += el[0][1][1]
-	FP += el[0][0][1]
-	FN += el[0][1][0]
-TP = TP / float(len(res))
-TN = TN / float(len(res))
-FP = FP / float(len(res))
-FN = FN / float(len(res))
+	TP += el[0][0][0][0]
+	TN += el[0][0][1][1]
+	FP += el[0][0][0][1]
+	FN += el[0][0][1][0]
+total = TP+TN+FP+FN
+TP = TP / float(total)
+TN = TN / float(total)
+FP = FP / float(total)
+FN = FN / float(total)
 print([TP,FP], ["TP","FP"])
 print([FN,TN], ["FN","TN"])
 print("")
