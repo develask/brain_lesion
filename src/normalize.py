@@ -49,6 +49,7 @@ def std_data(data,valor_min=0,valor_max=1):
 ind=0
 def std_data_mask(data):
 	data = data > 0
+	data = data +0
 	return(data)
 def getImgType(filename):
 	#tipo = ""

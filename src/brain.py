@@ -5,7 +5,7 @@ import os
 class Brain():
 	def __init__(self, brain):
 		self.name = brain
-		self.mask = nib.load("../data/mask/normalized/" + brain + "_lesion_mask_norm.nii.gz").get_data()
+		self.mask = nib.load("../data/mask/normalized/" + brain + "_mask_norm.nii.gz").get_data()
 		self.lenx = len(self.mask)
 		self.leny = len(self.mask[0])
 		self.lenz = len(self.mask[0][0])
@@ -28,21 +28,31 @@ class Brain():
 	def createSlices(self, step):
 		standar = nib.load("../data/standars/MNI152_T1_1mm_first_brain_mask.nii.gz").get_data()
 		indexes = np.indices((int(self.lenx/step), int(self.leny/step), int(self.lenz/step)))
-		tmp = self.mask[::step,::step,::step]
-		while (tmp.shape[0] != indexes.shape[1]):
-			tmp = tmp[:-1,:,:]
-		while (tmp.shape[1] != indexes.shape[2]):
-			tmp = tmp[:,:-1,:]
-		while (tmp.shape[2] != indexes.shape[3]):
-			tmp = tmp[:,:,:-1]
-		length = tmp.shape[0]*tmp.shape[1]*tmp.shape[2]
+		indexes *= step
+		ran = np.random.randint(step, size=indexes.shape)
+
+		indexes += ran
+
+		length = indexes[0].shape[0]*indexes[0].shape[1]*indexes[0].shape[2]
+
+		i1 = indexes[0].reshape(length)
+		i2 = indexes[1].reshape(length)
+		i3 = indexes[2].reshape(length)
+		tmp = self.mask[i1,i2,i3]
+
+		res = standar[i1,i2,i3] > 0
+		i1 = i1[res]
+		i2 = i2[res]
+		i3 = i3[res]
+		tmp = tmp[res]
+		length = tmp.shape[0]
+
 		self.result = np.concatenate((
-			indexes[0].reshape(1,length).T*step,
-			indexes[1].reshape(1,length).T*step,
-			indexes[2].reshape(1,length).T*step,
-			tmp.reshape(1,length).T
+			i1.reshape(length,1),
+			i2.reshape(length,1),
+			i3.reshape(length,1),
+			tmp.reshape(length,1)
 		), axis=1)
-		self.result = np.array([a for a in self.result if standar[a[0],a[1],a[2]]>0])
 
 	def balance(self, bal):
 		pos = self.result[self.result[:,3]==1]

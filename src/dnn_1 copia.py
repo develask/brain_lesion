@@ -35,19 +35,23 @@ import tensorflow as tf
 
 #############################################
 
-model_name	= "paralel_v3"
+model_name	= "paralel_v1"
+
+#### default: takes 3 imag types -> less context so as the input size of 
+ ### the NN is equal, and the comparison is fair
+
 
 batch_size = 128
 nb_classes = 2
-nb_epoch = 30
+nb_epoch = 12
 
 # input image dimensions
-inp_dim_2d = 63
-inp_dim_3d = 15
-step = 8
+inp_dim_2d = 35
+inp_dim_3d = 11
+step = 15
 
 # number of convolutional filters to use
-nb_filters = 35
+nb_filters = 45
 # size of pooling area for max pooling
 pool_size_2d = (2, 2)
 pool_size_3d = (2, 2, 2)
@@ -59,8 +63,108 @@ kernel_size_3d = (3, 3, 3)
 # img_types = ["flair", "FA", "anatomica"]
 
 # exp1
-img_types = ["flair"]
+img_types = ["flair","FA","anatomica"]
+# exp2
+# img_types = ["anatomica"]
+# # exp3
+# img_types = ["FA"]
 
+# # exp4
+# img_types = ["flair", "FA"]
+# # exp5
+# img_types = ["flair", "anatomica"]
+
+#train_data partition
+train_brain = ["tka002","tka003","tka005","tka006","tka009","tka010","tka012","tka013","tka016","tka017","tka019","tka020"]
+test_brain = ["tka004","tka007","tka011","tka015","tka018","tka021"]
+
+#balance proportion
+bal_train = 10
+bal_test = 10
+
+## load training data
+
+# ex = sc.Examples()
+# ex.initilize(crbs=train_brain)
+# ex.get_examples(step = step,output_type="classes")
+# ex.balance(bal_train)
+# tot = ex.split(1)
+
+tr = imm.ImageManager() # load training data
+# tr.init(train_brain)
+# tr.createSlices(step=step)
+# tr.balance(bal_train)
+# tr.split(1) # we will select the hole brain
+
+# X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
+# y_train = X_train_x[1]
+# X_train_x = X_train_x[0]
+
+# X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
+
+# X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
+
+# X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
+
+
+
+def next():
+	tr.reset()
+	tr.init(train_brain)
+	tr.createSlices(step=step)
+	tr.balance(bal_train)
+	tr.split(1) # we will select the hole brain
+
+	X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
+	y_train = X_train_x[1]
+	X_train_x = X_train_x[0]
+
+	X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
+
+	X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
+
+	X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
+	return([X_train_x,X_train_y, X_train_z, X_train_3d], y_train)
+
+
+# X_train,y_train = tot[0]
+# X_train_x = np.asarray(ex.getData(X_train, img_types, "2dx", inp_dim_2d, crbs=train_brain))
+# X_train_y = np.asarray(ex.getData(X_train, img_types, "2dy", inp_dim_2d, crbs=train_brain))
+# X_train_z = np.asarray(ex.getData(X_train, img_types, "2dz", inp_dim_2d, crbs=train_brain))
+# X_train_3d = np.asarray(ex.getData(X_train, img_types, "3d", inp_dim_3d, crbs=train_brain))
+
+print("size y_train",len(y_train))
+## load test data
+
+# ex = sc.Examples()
+# ex.initilize(crbs=test_brain)
+# ex.get_examples(step = step,output_type="classes")
+# ex.balance(bal_test)
+# tot = ex.split(1)
+
+# X_test, y_test = tot[0]
+# X_test_x = np.asarray(ex.getData(X_test, img_types, "2dx", inp_dim_2d,crbs=test_brain))
+# X_test_y = np.asarray(ex.getData(X_test, img_types, "2dy", inp_dim_2d,crbs=test_brain))
+# X_test_z = np.asarray(ex.getData(X_test, img_types, "2dz", inp_dim_2d,crbs=test_brain))
+# X_test_3d = np.asarray(ex.getData(X_test, img_types, "3d", inp_dim_3d,crbs=test_brain))
+
+
+# # reshape it so its format is the requierd
+
+# X_train_x = X_train_x.reshape(X_train_x.shape[0], inp_dim_2d, inp_dim_2d,len(img_types))
+# X_train_y = X_train_y.reshape(X_train_y.shape[0], inp_dim_2d, inp_dim_2d,len(img_types))
+# X_train_z = X_train_y.reshape(X_train_z.shape[0], inp_dim_2d, inp_dim_2d,len(img_types))
+# X_train_3d = X_train_3d.reshape(X_train_3d.shape[0], inp_dim_3d, inp_dim_3d, inp_dim_3d,len(img_types))
+
+
+# X_test_x = X_test_x.reshape(X_test_x.shape[0], inp_dim_2d, inp_dim_2d, len(img_types))
+# X_test_y = X_test_y.reshape(X_test_y.shape[0], inp_dim_2d, inp_dim_2d, len(img_types))
+# X_test_z = X_test_y.reshape(X_test_z.shape[0], inp_dim_2d, inp_dim_2d, len(img_types))
+# X_test_3d = X_test_3d.reshape(X_test_3d.shape[0], inp_dim_3d, inp_dim_3d, inp_dim_3d,len(img_types))
+
+
+# prepare input for the 
+print("lo k tenemos", y_train.shape)
 input_shape_2d = (inp_dim_2d, inp_dim_2d, len(img_types))
 input_shape_3d = (inp_dim_3d, inp_dim_3d, inp_dim_3d, len(img_types))
 
@@ -73,23 +177,15 @@ model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
                         input_shape=input_shape_2d))
 model_x.add(Activation('relu'))
 print("Output shape of 1st convolution (2d):", model_x.output_shape)
-model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
-                        border_mode='valid',
-                        input_shape=input_shape_2d))
+model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
 model_x.add(Activation('relu'))
 print("Output shape of 2nd convolution (2d):", model_x.output_shape)
-model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
 model_x.add(MaxPooling2D(pool_size=pool_size_2d))
 model_x.add(Dropout(0.25))
 print("Output shape after max pooling (2d):", model_x.output_shape)
+model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
 model_x.add(Activation('relu'))
 print("Output shape of 3rd convolution (2d):", model_x.output_shape)
-model_x.add(MaxPooling2D(pool_size=pool_size_2d))
-model_x.add(Dropout(0.25))
-print("Output shape after max pooling (2d):", model_x.output_shape)
-model_x.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
-model_x.add(Activation('relu'))
-print("Output shape of 4th convolution (2d):", model_x.output_shape)
 model_x.add(MaxPooling2D(pool_size=pool_size_2d))
 model_x.add(Dropout(0.25))
 print("Output shape after max pooling (2d):", model_x.output_shape)
@@ -101,10 +197,6 @@ print("Output shape after flatten (2d):", model_x.output_shape)
 ## paralel NN, y
 model_y = Sequential()
 
-model_y.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
-                        border_mode='valid',
-                        input_shape=input_shape_2d))
-model_y.add(Activation('relu'))
 
 model_y.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
                         border_mode='valid',
@@ -112,9 +204,6 @@ model_y.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
 model_y.add(Activation('relu'))
 
 model_y.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
-model_y.add(MaxPooling2D(pool_size=pool_size_2d))
-model_y.add(Dropout(0.25))
-
 model_y.add(Activation('relu'))
 
 model_y.add(MaxPooling2D(pool_size=pool_size_2d))
@@ -131,6 +220,7 @@ model_y.add(Flatten())
 
 
 
+
 ## paralel NN, z
 model_z = Sequential()
 
@@ -139,15 +229,7 @@ model_z.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
                         input_shape=input_shape_2d))
 model_z.add(Activation('relu'))
 
-model_z.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1],
-                        border_mode='valid',
-                        input_shape=input_shape_2d))
-model_z.add(Activation('relu'))
-
 model_z.add(Convolution2D(nb_filters, kernel_size_2d[0], kernel_size_2d[1]))
-model_z.add(MaxPooling2D(pool_size=pool_size_2d))
-model_z.add(Dropout(0.25))
-
 model_z.add(Activation('relu'))
 
 model_z.add(MaxPooling2D(pool_size=pool_size_2d))
@@ -165,6 +247,7 @@ model_z.add(Flatten())
 
 
 
+
 ## paralel NN, 3d
 model_3d = Sequential()
 print("Input shape to the 3d network:", input_shape_3d)
@@ -177,10 +260,6 @@ model_3d.add(Convolution3D(nb_filters,kernel_size_3d[0], kernel_size_3d[1], kern
 						 border_mode='valid'))
 model_3d.add(Activation('relu'))
 print("Output shape of 2nd convolution (3d):", model_3d.output_shape)
-model_3d.add(Convolution3D(nb_filters,kernel_size_3d[0], kernel_size_3d[1], kernel_size_3d[2],
-						 border_mode='valid'))
-model_3d.add(Activation('relu'))
-print("Output shape of 3nrd convolution (3d):", model_3d.output_shape)
 model_3d.add(MaxPooling3D(pool_size=pool_size_3d))
 model_3d.add(Dropout(0.25))
 print("Output shape after max pooling (3d):", model_3d.output_shape)
@@ -206,16 +285,38 @@ print("Output shape after softmax (2 classes):", final_model.output_shape)
 final_model.compile(loss='binary_crossentropy',
               optimizer='adadelta',
               metrics=['accuracy'])
+quit()
+print("gonna train")
 
-#train_data partition
-brains = ["tka002","tka003","tka004","tka005","tka006","tka007","tka009","tka010","tka011","tka012","tka013","tka015","tka016","tka017","tka018","tka019","tka020","tka021"]
+final_model.fit_generator()
 
-#balance proportion
-bal_train = 10
-bal_test = 200
+cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
+final_model.save("../models/model_" + model_name + ".mdl")
 
-tr = imm.ImageManager() # load training data
-res = []
+
+
+#model = load_model("../models/model_0.mdl")
+
+
+### test stuff
+
+tt = imm.ImageManager() # load training data
+tt.init(test_brain)
+tt.createSlices(step=step)
+tt.balance(bal_test)
+tt.split(1) # we will select the hole brain
+
+X_test_x = tt.getData(img_types, "2dx", inp_dim_2d)[0]
+y_test = X_test_x[1]
+X_test_x = X_test_x[0]
+
+X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0][0]
+
+X_test_z = tt.getData(img_types, "2dz", inp_dim_2d)[0][0]
+
+X_test_3d = tt.getData(img_types, "3d", inp_dim_3d)[0][0]
+
+
 def evaluate(model,X_test,y_test):
 	y_pred = model.predict(X_test)
 	mat = [[0,0],[0,0]] # [[TP,FP],[FN,TN]]
@@ -234,99 +335,12 @@ def evaluate(model,X_test,y_test):
 
 	TPR = mat[0][0] / (mat[0][0] + mat[1][0])
 	TNR = mat[1][1] / (mat[1][1] + mat[0][1])
-	return(mat,TPR,TNR)	
+	return(mat,TPR,TNR)		
 
-for i in range(len(brains)/4):
-	train_brain = brains[:i*4]+brains[(i+1)*4:]
-	test_brain = brains[i*4:(i+1)*4]
-
-	## load training data
-	tr.reset()
-	tr.init(train_brain)
-	tr.createSlices(step=step)
-	tr.balance(bal_train)
-	tr.split(1) # we will select the hole brain
-
-	X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
-	y_train = X_train_x[1]
-	X_train_x = X_train_x[0]
-
-	X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
-
-	X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
-
-	X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
-
-
-
-
-	final_model.compile(loss='binary_crossentropy',
-	              optimizer='adadelta',
-	              metrics=['accuracy'])
-
-	cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
-	final_model.save("../models/model_" + model_name +"_"+ it + ".mdl")
-
-
-
-	#model = load_model("../models/model_0.mdl")
-
-	del tr
-	### test stuff
-
-	tt = imm.ImageManager() # load training data
-	tt.init(test_brain)
-	tt.createSlices(step=step)
-	tt.balance(bal_test)
-	tt.split(1) # we will select the hole brain
-
-	X_test_x = tt.getData(img_types, "2dx", inp_dim_2d)[0]
-	y_test = X_test_x[1]
-	X_test_x = X_test_x[0]
-
-	X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0][0]
-
-	X_test_z = tt.getData(img_types, "2dz", inp_dim_2d)[0][0]
-
-	X_test_3d = tt.getData(img_types, "3d", inp_dim_3d)[0][0]	
-
-	score = evaluate(final_model,[X_test_x, X_test_y, X_test_z, X_test_3d],y_test)
-	res.append((score,train_brain, test_brain))
-	print("###########################################")
-	print("Iteration:",i)
-	print("balance:", bal_test, "(", y_test.shape[0], ")")
-	print(score[0][0])
-	print(score[0][1])
-	print("TPR:", score[1])
-	print("TNR:", score[2])
-	del tt
-
-
-print("")
-print("########################################")
-print("###         Total (Average)          ###")
-print("########################################")
-TP = 0
-TN = 0
-FP = 0
-FN = 0
-for el in res:
-	TP += el[0][0][0]
-	TN += el[0][1][1]
-	FP += el[0][0][1]
-	FN += el[0][1][0]
-TP = TP / float(len(res))
-TN = TN / float(len(res))
-FP = FP / float(len(res))
-FN = FN / float(len(res))
-print([TP,FP], ["TP","FP"])
-print([FN,TN], ["FN","TN"])
-print("")
-print("Accuracy:", TP+TN)
-print("TPR:", TP / float(TP + FN))
-print("TNR:", TN / float(TN + FP))
-
-
-
+score = evaluate(final_model,[X_test_x, X_test_y, X_test_z, X_test_3d],y_test)
+print(score[0][0])
+print(score[0][1])
+print("TPR:", score[1])
+print("TNR:", score[2])
 
 
