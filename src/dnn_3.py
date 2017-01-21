@@ -35,7 +35,7 @@ import tensorflow as tf
 
 #############################################
 
-model_name	= "paralel_v3"
+model_name	= "paralel_v3_flair"
 
 batch_size = 128
 nb_classes = 2
