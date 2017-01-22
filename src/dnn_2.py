@@ -32,11 +32,11 @@ import gc
 
 import tensorflow as tf
 import json
-    
+
 
 #############################################
 
-model_name	= "paralel_v2"
+model_name	= "paralel_v2_FA_anatomica"
 
 batch_size = 128
 nb_classes = 2
@@ -60,7 +60,7 @@ kernel_size_3d = (3, 3, 3)
 # img_types = ["flair", "FA", "anatomica"]
 
 # exp1
-img_types = ["flair","FA"]
+img_types = ["FA","anatomica"]
 
 # prepare input for the 
 input_shape_2d = (inp_dim_2d, inp_dim_2d, len(img_types))
@@ -262,7 +262,7 @@ for i in range(len(brains)/4):
 	              metrics=['accuracy'])
 
 	cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
-	final_model.save("../models/model_" + model_name +"_"+ it + ".mdl")
+	final_model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
 
 	with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
 		tf.write(json.dumps(cv.history))
@@ -274,7 +274,7 @@ for i in range(len(brains)/4):
 
 	tt.reset()
 	tt.init(test_brain)
-	tt.createSlices(step=step)
+	tt.createSlices(step=step+1)
 	tt.balance(bal_test)
 	tt.split(1) # we will select the hole brain
 

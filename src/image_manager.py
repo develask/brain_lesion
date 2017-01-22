@@ -29,7 +29,7 @@ class ImageManager():
 			im.split(portion)
 
 	def getData(self, img_types, sample_type, dim, p=True):
-		self.memoryAvailable(img_types, sample_type, dim,p)
+		# self.memoryAvailable(img_types, sample_type, dim,p)
 		train_x = None
 		train_y = None
 		test_x = None

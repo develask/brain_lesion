@@ -31,11 +31,11 @@ import image_manager as imm
 import gc
 
 import tensorflow as tf
-    
+import json
 
 #############################################
 
-model_name	= "paralel_v3_flair"
+model_name	= "paralel_v3_anatomica"
 
 batch_size = 128
 nb_classes = 2
@@ -59,7 +59,7 @@ kernel_size_3d = (3, 3, 3)
 # img_types = ["flair", "FA", "anatomica"]
 
 # exp1
-img_types = ["flair"]
+img_types = ["anatomica"]
 
 input_shape_2d = (inp_dim_2d, inp_dim_2d, len(img_types))
 input_shape_3d = (inp_dim_3d, inp_dim_3d, inp_dim_3d, len(img_types))
@@ -228,10 +228,10 @@ def evaluate(model,X_test,y_test):
 			mat[1][0] += y_pred[i][0] #FN
 			mat[0][0] += y_pred[i][1] #TP
 
-	mat[0][0] /= len(y_pred)
-	mat[0][1] /= len(y_pred)
-	mat[1][0] /= len(y_pred)
-	mat[1][1] /= len(y_pred)
+	# mat[0][0] /= len(y_pred)
+	# mat[0][1] /= len(y_pred)
+	# mat[1][0] /= len(y_pred)
+	# mat[1][1] /= len(y_pred)
 
 	TPR = mat[0][0] / (mat[0][0] + mat[1][0])
 	TNR = mat[1][1] / (mat[1][1] + mat[0][1])
@@ -244,7 +244,7 @@ for i in range(len(brains)/4):
 	## load training data
 	tr.reset()
 	tr.init(train_brain)
-	tr.createSlices(step=step)
+	tr.createSlices(step=step+1)
 	tr.balance(bal_train)
 	tr.split(1) # we will select the hole brain
 
@@ -266,7 +266,7 @@ for i in range(len(brains)/4):
 	              metrics=['accuracy'])
 
 	cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
-	final_model.save("../models/model_" + model_name +"_"+ it + ".mdl")
+	final_model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
 
 	with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
 		tf.write(json.dumps(cv.history))
