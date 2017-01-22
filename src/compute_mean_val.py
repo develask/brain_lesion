@@ -18,6 +18,8 @@ for mask in masks:
 	brain = img * std
 	total_pixels += brain.shape[0] *  brain.shape[1] *  brain.shape[2]
 	positives += np.sum(brain)
+	if "002" in mask:
+		print(mask,np.sum(brain),brain.shape[0] *  brain.shape[1] *  brain.shape[2])
 
 print("total",total_pixels)
 print("positive",positives)

@@ -171,33 +171,13 @@ print("Output shape after softmax (2 classes):", merged_softmax1.get_shape())
 
 model = Model(input=[big_window_input, small_window_input], output=output)
 
-model.compile(loss='binary_crossentropy',
-              optimizer='adadelta',
-              metrics=['accuracy'])
 
-print("gonna train")
+#balance proportion
+bal_train = 10
+bal_test = 200
 
-# json_string = final_model.to_json()
-# f = open('../models/model.json', 'w')
-# f.write(json_string)
-# f.close()
-# quit()
-
-model.fit([X_train_bigger,X_train_x], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
-model.save("../models/model_0.mdl")
-
-
-# model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch,
-#           verbose=1, validation_data=(X_test, Y_test))
-
-
-
-
-#model = load_model("../models/model_0.mdl")
-# score = model.evaluate(X_test, y_test, verbose=1)
-# print('Test score:', score[0])
-# print('Test accuracy:', score[1])
-
+tr = imm.ImageManager() # load training data
+res = []
 def evaluate(model,X_test,y_test):
 	y_pred = model.predict(X_test)
 	mat = [[0,0],[0,0]] # [[TP,FP],[FN,TN]]
@@ -209,19 +189,91 @@ def evaluate(model,X_test,y_test):
 			mat[1][0] += y_pred[i][0] #FN
 			mat[0][0] += y_pred[i][1] #TP
 
-	mat[0][0] /= len(y_pred)
-	mat[0][1] /= len(y_pred)
-	mat[1][0] /= len(y_pred)
-	mat[1][1] /= len(y_pred)
+	# mat[0][0] /= len(y_pred)
+	# mat[0][1] /= len(y_pred)
+	# mat[1][0] /= len(y_pred)
+	# mat[1][1] /= len(y_pred)
 
 	TPR = mat[0][0] / (mat[0][0] + mat[1][0])
 	TNR = mat[1][1] / (mat[1][1] + mat[0][1])
-	return(mat,TPR,TNR)		
+	return(mat,TPR,TNR)	
 
-score = evaluate(model,[X_test_bigger, X_test_x],y_test)
-print(score[0][0])
-print(score[0][1])
-print("TPR:", score[1])
-print("TNR:", score[2])
+for i in range(len(brains)/4):
+	train_brain = brains[:i*4]+brains[(i+1)*4:]
+	test_brain = brains[i*4:(i+1)*4]
+
+	## load training data
+	tr.reset()
+	tr.init(train_brain)
+	tr.createSlices(step=step)
+	tr.balance(bal_train)
+	tr.split(1) # we will select the hole brain
+
+	X_train_x = tr.getData(img_types, "2dy", inp_dim)[0]
+	y_train = X_train_x[1]
+	X_train_x = X_train_x[0]
+
+	X_train_bigger =tr.getData(img_types, "2dy", inp_dim_bigger)[0][0]
 
 
+	final_model.compile(loss='binary_crossentropy',
+	              optimizer='adadelta',
+	              metrics=['accuracy'])
+
+	cv = final_model.fit([X_train_x,X_train_bigger], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
+	final_model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
+
+	with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
+		tf.write(json.dumps(cv.history))
+
+	#model = load_model("../models/model_0.mdl")
+	tr.reset()
+	### test stuff
+
+	tt = imm.ImageManager() # load training data
+	tt.init(test_brain)
+	tt.createSlices(step=step+1)
+	tt.balance(bal_test)
+	tt.split(1) # we will select the hole brain
+
+	X_test_x = tt.getData(img_types, "2dy", inp_dim)[0]
+	y_test = X_test_x[1]
+	X_test_x = X_test_x[0]
+
+	X_test_bigger =tr.getData(img_types, "2dy", inp_dim_bigger)[0][0]	
+
+	score = evaluate(final_model,[X_test_x, X_test_bigger],y_test)
+	res.append((score,train_brain, test_brain))
+	print("###########################################")
+	print("Iteration:",i)
+	print("balance:", bal_test, "(", y_test.shape[0], ")")
+	print(score[0][0])
+	print(score[0][1])
+	print("TPR:", score[1])
+	print("TNR:", score[2])
+	tt.reset()
+
+print("")
+print("########################################")
+print("###         Total (Average)          ###")
+print("########################################")
+TP = 0
+TN = 0
+FP = 0
+FN = 0
+for el in res:
+	TP += el[0][0][0][0]
+	TN += el[0][0][1][1]
+	FP += el[0][0][0][1]
+	FN += el[0][0][1][0]
+total = TP+TN+FP+FN
+TP = TP / float(total)
+TN = TN / float(total)
+FP = FP / float(total)
+FN = FN / float(total)
+print([TP,FP], ["TP","FP"])
+print([FN,TN], ["FN","TN"])
+print("")
+print("Accuracy:", TP+TN)
+print("TPR:", TP / float(TP + FN))
+print("TNR:", TN / float(TN + FP))

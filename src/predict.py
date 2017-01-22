@@ -25,8 +25,9 @@ final = brain.result.shape[0]
 inicio = 0
 fin = int(final*0.01)
 step = fin
-# print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
-print(fin*100/float(final),"%                 ",fin," / ", final)
+np.random.shuffle(brain.result)
+print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
+#print(fin*100/float(final),"%                 ",fin," / ", final)
 while True:
 	brain.train = brain.result[inicio:fin]
 	brain.test = brain.result[0:0]
@@ -48,9 +49,8 @@ while True:
 	for a in brain.train:
 		new_im[a[0],a[1],a[2]] = a[4]
 
-	print("Total positivos:", np.sum(new_im))
-	# print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
-	print(fin*100/float(final),"%                 ",fin," / ", final)
+	print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
+	#print(fin*100/float(final),"%                 ",fin," / ", final)
 	inicio += step
 	fin += step
 	if fin>final:
