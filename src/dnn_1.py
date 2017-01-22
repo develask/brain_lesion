@@ -165,15 +165,19 @@ final_model = Sequential()
 
 final_model.add(merged)
 print("Output shape after merge:", final_model.output_shape)
+final_model.add(Dense(1024))
+final_model.add(Activation('relu'))
+final_model.add(Dropout(0.5))
+print("Output shape after fully connected(dropout0.5):", final_model.output_shape)
 final_model.add(Dense(128))
 final_model.add(Activation('relu'))
 final_model.add(Dropout(0.5))
-print("Output shape after dropout(0.5):", final_model.output_shape)
+print("Output shape after dully connected(dropout0.5):", final_model.output_shape)
 final_model.add(Dense(nb_classes))
 final_model.add(Activation('softmax'))
 print("Output shape after softmax (2 classes):", final_model.output_shape)
 
-
+quit()
 
 #train_data partition
 brains = ["tka002","tka003","tka004","tka005","tka006","tka007","tka009","tka010","tka011","tka012","tka013","tka015","tka016","tka017","tka018","tka019","tka020","tka021"]
