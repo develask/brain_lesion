@@ -59,44 +59,6 @@ bal_test = 10
 
 img_types = ["flair","anatomica", "FA"]
 
-train_brain = ["tka003","tka004"]
-test_brain = ["tka002"]
-
-ex = sc.Examples()
-ex.initilize(crbs=train_brain)
-ex.get_examples(step = step,output_type="classes")
-
-ex.balance(bal_train)
-
-tot = ex.split(1)
-
-X_train,y_train = tot[0]
-X_train_x = np.asarray(ex.getData(X_train, img_types, "2dy", inp_dim,crbs=train_brain))
-X_train_bigger = np.asarray(ex.getData(X_train, img_types, "2dy", inp_dim_bigger,crbs=train_brain))
-
-
-ex = sc.Examples()
-ex.initilize(crbs=test_brain)
-ex.get_examples(step = step,output_type="classes")
-
-ex.balance(bal_test)
-
-tot = ex.split(1)
-
-
-
-X_test, y_test = tot[0]
-X_test_x = np.asarray(ex.getData(X_test, img_types, "2dy", inp_dim,crbs=test_brain))
-X_test_bigger = np.asarray(ex.getData(X_test, img_types, "2dy", inp_dim_bigger,crbs=test_brain))
-
-
-
-X_train_x = X_train_x.reshape(X_train_x.shape[0], inp_dim, inp_dim,len(img_types))
-X_train_bigger = X_train_bigger.reshape(X_train_bigger.shape[0], inp_dim_bigger, inp_dim_bigger,len(img_types))
-
-X_test_x = X_test_x.reshape(X_test_x.shape[0], inp_dim, inp_dim, len(img_types))
-X_test_bigger = X_test_bigger.reshape(X_test_bigger.shape[0], inp_dim_bigger, inp_dim_bigger, len(img_types))
-
 input_shape = (inp_dim, inp_dim, len(img_types))
 
 # Bigger path
@@ -171,10 +133,7 @@ print("Output shape after softmax (2 classes):", merged_softmax1.get_shape())
 
 model = Model(input=[big_window_input, small_window_input], output=output)
 
-
-#balance proportion
-bal_train = 10
-bal_test = 200
+brains = ["tka002","tka003","tka004","tka005","tka006","tka007","tka009","tka010","tka011","tka012","tka013","tka015","tka016","tka017","tka018","tka019","tka020","tka021"]
 
 tr = imm.ImageManager() # load training data
 res = []
