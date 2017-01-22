@@ -24,13 +24,13 @@ from keras.utils import np_utils
 from keras.models import model_from_json, Model
 from keras import backend as K
 
-import sample_cretation as sc
 import random as rdm
 import nibabel as nib
-import image_functions as imf
+import image_manager as imm
 import gc
 
 import tensorflow as tf
+import json
     
 
 #############################################
@@ -39,13 +39,13 @@ import tensorflow as tf
 
 batch_size = 128
 nb_classes = 2
-nb_epoch = 12
+nb_epoch = 1
 
 # input image dimensions
 inp_dim = 33
 inp_dim_bigger = 65
 
-step = 3
+step = 8
 # number of convolutional filters to use
 nb_filters = 32
 # size of pooling area for max pooling
@@ -175,12 +175,12 @@ for i in range(len(brains)/4):
 	X_train_bigger =tr.getData(img_types, "2dy", inp_dim_bigger)[0][0]
 
 
-	final_model.compile(loss='binary_crossentropy',
+	model.compile(loss='binary_crossentropy',
 	              optimizer='adadelta',
 	              metrics=['accuracy'])
 
-	cv = final_model.fit([X_train_x,X_train_bigger], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
-	final_model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
+	cv = model.fit([X_train_x,X_train_bigger], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
+	model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
 
 	with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
 		tf.write(json.dumps(cv.history))
@@ -201,7 +201,7 @@ for i in range(len(brains)/4):
 
 	X_test_bigger =tr.getData(img_types, "2dy", inp_dim_bigger)[0][0]	
 
-	score = evaluate(final_model,[X_test_x, X_test_bigger],y_test)
+	score = evaluate(model,[X_test_x, X_test_bigger],y_test)
 	res.append((score,train_brain, test_brain))
 	print("###########################################")
 	print("Iteration:",i)
