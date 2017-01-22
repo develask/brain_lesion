@@ -179,7 +179,7 @@ for i in range(len(brains)/4):
 	              optimizer='adadelta',
 	              metrics=['accuracy'])
 
-	cv = model.fit([X_train_x,X_train_bigger], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
+	cv = model.fit([X_train_bigger,X_train_x], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
 	model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
 
 	with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
@@ -201,7 +201,7 @@ for i in range(len(brains)/4):
 
 	X_test_bigger =tr.getData(img_types, "2dy", inp_dim_bigger)[0][0]	
 
-	score = evaluate(model,[X_test_x, X_test_bigger],y_test)
+	score = evaluate(model,[X_test_bigger, X_test_x],y_test)
 	res.append((score,train_brain, test_brain))
 	print("###########################################")
 	print("Iteration:",i)
