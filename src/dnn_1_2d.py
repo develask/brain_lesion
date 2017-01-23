@@ -177,7 +177,7 @@ for i in range(len(brains)/4):
 		tr.balance(bal_train)
 		tr.split(1) # we will select the hole brain
 
-		X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
+		X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0]
 		y_train = X_train_y[1]
 		X_train_y = X_train_y[0]
 
@@ -206,7 +206,7 @@ for i in range(len(brains)/4):
 		tt.balance(bal_test)
 		tt.split(1) # we will select the hole brain
 
-		X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0][0]
+		X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0]
 		y_test = X_test_y[1]
 		X_test_y = X_test_y[0]
 
