@@ -30,12 +30,12 @@ class ImageManager():
 
 	def joinSlices(self):
 		self.r = None
-		for index in len(self.images):
+		for index in range(len(self.images)):
 			if self.r == None:
-				self.r = self.images[index].train
+				self.r = self.images[index].result
 				self.r = np.insert(self.r, 4, index, axis=1)
 			else:
-				tmp = self.images[index].train
+				tmp = self.images[index].result
 				tmp = np.insert(tmp, 4, index, axis=1)
 				self.r = np.concatenate((self.r, tmp), axis=0)
 			self.images[index].result = []
@@ -49,7 +49,7 @@ class ImageManager():
 		if r.shape[0] == 0:
 			raise Exception("End of Epoch")
 		self.start += num
-		for index in len(self.images):
+		for index in range(len(self.images)):
 			tmp = r[r[:,4]==index]
 			self.images[index].train = tmp
 			self.images[index].test = tmp[tmp.shape[0]:]

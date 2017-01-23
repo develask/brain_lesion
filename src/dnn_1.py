@@ -238,7 +238,7 @@ for i in range(len(brains)/4):
 		cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
 		final_model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
 
-		with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
+		with open("hist_"+model_name+"_"+str(i)+"_"+str(it)+".json","w") as tf:
 			tf.write(json.dumps(cv.history))
 
 		#model = load_model("../models/model_0.mdl")

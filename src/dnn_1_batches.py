@@ -43,11 +43,17 @@ model_name	= "paralel_v1_batches"
 
 batch_size = 128
 nb_classes = 2
-nb_epoch = 30
+nb_epoch = 200
 # input image dimensions
 inp_dim_2d = 35
 inp_dim_3d = 11
-step = 10
+step = 11
+
+init_ler = 0.05
+final_ler = 0.005
+dec = (final_ler/init_ler)**(1/nb_epoch)
+
+nb_rep = 1 # times you repeat each cross validation
 
 # number of convolutional filters to use
 nb_filters = 45 ### lets change it manually, increasing it 
@@ -58,6 +64,9 @@ pool_size_3d = (2, 2, 2)
 kernel_size_2d = (3, 3)
 kernel_size_3d = (3, 3, 3)
 
+#balance proportion
+bal_train = 10
+bal_test = 200
 
 # exp1
 img_types = ["flair","FA","anatomica"]
@@ -178,16 +187,12 @@ final_model.add(Activation('softmax'))
 print("Output shape after softmax (2 classes):", final_model.output_shape)
 
 
-final_model.compile(loss='binary_crossentropy',
-		              optimizer='adadelta',
-		              metrics=['accuracy'])
+
 
 #train_data partition
 brains = ["tka002","tka003","tka004","tka005","tka006","tka007","tka009","tka010","tka011","tka012","tka013","tka015","tka016","tka017","tka018","tka019","tka020","tka021"]
 
-#balance proportion
-bal_train = 10
-bal_test = 200
+
 
 tr = imm.ImageManager() # load training data
 cv = imm.ImageManager() # load training data
@@ -212,66 +217,73 @@ def evaluate(model,X_test,y_test):
 	TNR = mat[1][1] / (mat[1][1] + mat[0][1])
 	return(mat,TPR,TNR)
 
-nb_rep = 1
+
 cv_history = []
-for i in range(len(brains)/4):
+for i in range(int(len(brains)/4)):
+	
 	for it in range(nb_rep):
 		train_brain = brains[:i*4]+brains[(i+1)*4:]
 		test_brain = brains[i*4:(i+1)*4]
 
-		## load training data
+		
 		cv.reset()
 		cv.init(train_brain)
 		cv.createSlices(step=step)
 		cv.balance(bal_train)
 		cv.split(1)
 
-		X_cv_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
+		X_cv_x = cv.getData(img_types, "2dx", inp_dim_2d)[0]
 		y_cv = X_cv_x[1]
 		X_cv_x = X_cv_x[0]
-		X_cv_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
-		X_cv_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
-		X_cv_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
+		X_cv_y = cv.getData(img_types, "2dy", inp_dim_2d)[0][0]
+		X_cv_z = cv.getData(img_types, "2dz", inp_dim_2d)[0][0]
+		X_cv_3d = cv.getData(img_types, "3d", inp_dim_3d)[0][0]
 
 
-		tr.reset()
-		tr.init(train_brain)
-		tr.createSlices(step=step)
-		tr.balance(bal_train)
-		tr.joinSlices()
 
-		for i in range(nb_epoch):
+		ler = init_ler
+		for j in range(nb_epoch):
 			tr_h = None
-			print("Epoch:", i, "/", nb_epoch)
-			j = 0
-			while True:
-				try:
-					tr.prepareNewBatch(batch_size)
-				except Exception, e:
-					print(e)
-					break
+			print("Starting epoch:", j+1, "/", nb_epoch)
+			print("Genrating new training data")
+			# j = 0
+			# while True:
+			# 	try:
+			# 		tr.prepareNewBatch(batch_size)
+			# 	except Exception as e:
+			# 		print(e)
+			# 		break
+			tr.reset()
+			tr.init(train_brain)
+			tr.createSlices(step=step)
+			tr.balance(bal_train)
+			tr.split(1)
+			X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
+			y_train = X_train_x[1]
+			X_train_x = X_train_x[0]
+			X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
+			X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
+			X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
 
-				X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
-				y_train = X_train_x[1]
-				X_train_x = X_train_x[0]
-				X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
-				X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
-				X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
-
-				tr_h = final_model.train_on_batch([X_train_x,X_train_y, X_train_z, X_train_3d],y_train)
-			print("have trained on",j,"batches")
+			sgd = SGD(lr=ler,decay=0,momentum=0.0,nesterov = False)
+			final_model.compile(loss='binary_crossentropy',
+		              			optimizer=sgd,
+		              				metrics=['accuracy'])
+			tr_h = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, nb_epoch=1,verbose=2)
 			cv_h = final_model.evaluate([X_cv_x, X_cv_y, X_cv_z, X_cv_3d],y_cv)
-			print("train_loss", tr_h)
-			print("validation_loss", cv_h)
-			cv_history.append((tr_h, cv_h))
+			print("train_loss", tr_h.history["loss"][0])
+			print("validation_loss", cv_h[0])
+			cv_history.append((tr_h.history["loss"][0], cv_h[0]))
+			ler *= dec
 
 		final_model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
 
 		with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
-			tf.write(json.dumps(cv.history))
+			tf.write(json.dumps(cv_history))
 
 		#model = load_model("../models/model_0.mdl")
 		tr.reset()
+		cv.reset()
 		### test stuff
 
 		tt = imm.ImageManager() # load training data
@@ -302,18 +314,20 @@ for i in range(len(brains)/4):
 		tt.reset()
 	print("")
 	print("########################################")
-	print("###     Total (Average) cv: "+i+"    ###")
+	print("###     Total (Average) cv: "+str(i)+"    ###")
 	print("########################################")
 	TP = 0
 	TN = 0
 	FP = 0
 	FN = 0
+
 	for el in res[i*nb_rep:(i*nb_rep)+nb_rep]:
 		TP += el[0][0][0][0]
 		TN += el[0][0][1][1]
 		FP += el[0][0][0][1]
 		FN += el[0][0][1][0]
 	total = TP+TN+FP+FN
+
 	TP = TP / float(total)
 	TN = TN / float(total)
 	FP = FP / float(total)
@@ -334,6 +348,7 @@ TP = 0
 TN = 0
 FP = 0
 FN = 0
+
 for el in res:
 	TP += el[0][0][0][0]
 	TN += el[0][0][1][1]
