@@ -216,7 +216,7 @@ for i in range(len(brains)/4):
 		tt.reset()
 	print("")
 	print("########################################")
-	print("###     Total (Average) cv: "+i+"    ###")
+	print("###        (Average) cv: "+i+"       ###")
 	print("########################################")
 	TP = 0
 	TN = 0
