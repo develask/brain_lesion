@@ -1,12 +1,12 @@
 import numpy as np
 import nibabel as nib
 
-pred = 
-real = 
+pred = "tka002_mask_norm.nii.gz"
+real = "tka002_paralel_v1_0.nii.gz"
 
-mask = nib.load("../data/standars/MNI152_T1_1mm_first_brain_mask.nii.gz").getdata()>0
-original = nib.load("../data/mask/normalized/"+pred).getdata()>0
-predicted = nib.load("../results/"+real).getdata()>0
+mask = nib.load("../data/standars/MNI152_T1_1mm_first_brain_mask.nii.gz").get_data()>0
+original = nib.load("../data/mask/normalized/"+pred).get_data()>0
+predicted = nib.load("../results/"+real).get_data()>0
 
 total = np.sum(mask)
 
