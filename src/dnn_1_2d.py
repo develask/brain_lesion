@@ -35,7 +35,7 @@ import json
 
 #############################################
 
-model_name	= "paralel_v1"
+model_name	= "paralel_v1_2D"
 
 #### default: takes 3 imag types -> less context so as the input size of 
  ### the NN is equal, and the comparison is fair
