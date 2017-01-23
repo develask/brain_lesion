@@ -234,70 +234,95 @@ def evaluate(model,X_test,y_test):
 	return(mat,TPR,TNR)	
 
 for i in range(len(brains)/4):
-	train_brain = brains[:i*4]+brains[(i+1)*4:]
-	test_brain = brains[i*4:(i+1)*4]
+	for it in range(10):
+		train_brain = brains[:i*4]+brains[(i+1)*4:]
+		test_brain = brains[i*4:(i+1)*4]
 
-	## load training data
-	tr.reset()
-	tr.init(train_brain)
-	tr.createSlices(step=step)
-	tr.balance(bal_train)
-	tr.split(1) # we will select the hole brain
+		## load training data
+		tr.reset()
+		tr.init(train_brain)
+		tr.createSlices(step=step)
+		tr.balance(bal_train)
+		tr.split(1) # we will select the hole brain
 
-	X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
-	y_train = X_train_x[1]
-	X_train_x = X_train_x[0]
+		X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
+		y_train = X_train_x[1]
+		X_train_x = X_train_x[0]
 
-	X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
+		X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
 
-	X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
+		X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]
 
-	X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
-
-
+		X_train_3d = tr.getData(img_types, "3d", inp_dim_3d)[0][0]
 
 
-	final_model.compile(loss='binary_crossentropy',
-	              optimizer='adadelta',
-	              metrics=['accuracy'])
 
-	cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
-	final_model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
 
-	with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
-		tf.write(json.dumps(cv.history))
+		final_model.compile(loss='binary_crossentropy',
+		              optimizer='adadelta',
+		              metrics=['accuracy'])
 
-	#model = load_model("../models/model_0.mdl")
+		cv = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, validation_split=0.1, nb_epoch=nb_epoch,verbose=2)
+		final_model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
 
-	tr.reset()
-	### test stuff
+		with open("hist_"+model_name+"_"+str(i)+".json","w") as tf:
+			tf.write(json.dumps(cv.history))
 
-	tt.reset()
-	tt.init(test_brain)
-	tt.createSlices(step=step+1)
-	tt.balance(bal_test)
-	tt.split(1) # we will select the hole brain
+		#model = load_model("../models/model_0.mdl")
 
-	X_test_x = tt.getData(img_types, "2dx", inp_dim_2d)[0]
-	y_test = X_test_x[1]
-	X_test_x = X_test_x[0]
+		tr.reset()
+		### test stuff
 
-	X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0][0]
+		tt.reset()
+		tt.init(test_brain)
+		tt.createSlices(step=step+1)
+		tt.balance(bal_test)
+		tt.split(1) # we will select the hole brain
 
-	X_test_z = tt.getData(img_types, "2dz", inp_dim_2d)[0][0]
+		X_test_x = tt.getData(img_types, "2dx", inp_dim_2d)[0]
+		y_test = X_test_x[1]
+		X_test_x = X_test_x[0]
 
-	X_test_3d = tt.getData(img_types, "3d", inp_dim_3d)[0][0]	
+		X_test_y = tt.getData(img_types, "2dy", inp_dim_2d)[0][0]
 
-	score = evaluate(final_model,[X_test_x, X_test_y, X_test_z, X_test_3d],y_test)
-	res.append((score,train_brain, test_brain))
-	print("###########################################")
-	print("Iteration:",i)
-	print("balance:", bal_test, "(", y_test.shape[0], ")")
-	print(score[0][0])
-	print(score[0][1])
-	print("TPR:", score[1])
-	print("TNR:", score[2])
-	tt.reset()
+		X_test_z = tt.getData(img_types, "2dz", inp_dim_2d)[0][0]
+
+		X_test_3d = tt.getData(img_types, "3d", inp_dim_3d)[0][0]	
+
+		score = evaluate(final_model,[X_test_x, X_test_y, X_test_z, X_test_3d],y_test)
+		res.append((score,train_brain, test_brain))
+		print("###########################################")
+		print("Cross Validation:",i, "\tIteration:",it)
+		print("balance:", bal_test, "(", y_test.shape[0], ")")
+		print(score[0][0])
+		print(score[0][1])
+		print("TPR:", score[1])
+		print("TNR:", score[2])
+		tt.reset()
+	print("")
+	print("########################################")
+	print("###     Total (Average) cv: "+i+"    ###")
+	print("########################################")
+	TP = 0
+	TN = 0
+	FP = 0
+	FN = 0
+	for el in res[i*10:(i*10)+10]:
+		TP += el[0][0][0][0]
+		TN += el[0][0][1][1]
+		FP += el[0][0][0][1]
+		FN += el[0][0][1][0]
+	total = TP+TN+FP+FN
+	TP = TP / float(total)
+	TN = TN / float(total)
+	FP = FP / float(total)
+	FN = FN / float(total)
+	print([TP,FP], ["TP","FP"])
+	print([FN,TN], ["FN","TN"])
+	print("")
+	print("Accuracy:", TP+TN)
+	print("TPR:", TP / float(TP + FN))
+	print("TNR:", TN / float(TN + FP))
 
 print("")
 print("########################################")
