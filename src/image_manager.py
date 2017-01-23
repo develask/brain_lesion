@@ -28,6 +28,33 @@ class ImageManager():
 		for im in self.images:
 			im.split(portion)
 
+	def joinSlices(self):
+		self.r = None
+		for index in len(self.images):
+			if self.r == None:
+				self.r = self.images[index].train
+				self.r = np.insert(self.r, 4, index, axis=1)
+			else:
+				tmp = self.images[index].train
+				tmp = np.insert(tmp, 4, index, axis=1)
+				self.r = np.concatenate((self.r, tmp), axis=0)
+			self.images[index].result = []
+			self.images[index].train = []
+			self.images[index].test = []
+		np.random.shuffle(self.r)
+		self.start = 0
+
+	def prepareNewBatch(self, num):
+		r = self.r[self.start:self.start+num]
+		if r.shape[0] == 0:
+			raise Exception("End of Epoch")
+		self.start += num
+		for index in len(self.images):
+			tmp = r[r[:,4]==index]
+			self.images[index].train = tmp
+			self.images[index].test = tmp[tmp.shape[0]:]
+
+
 	def getData(self, img_types, sample_type, dim, p=True):
 		# self.memoryAvailable(img_types, sample_type, dim,p)
 		train_x = None
