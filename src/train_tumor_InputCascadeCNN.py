@@ -39,7 +39,7 @@ import json
 
 batch_size = 128
 nb_classes = 2
-nb_epoch = 1
+nb_epoch = 30
 
 # input image dimensions
 inp_dim = 33
@@ -56,6 +56,8 @@ kernel_size = (3, 3)
 #balance prop
 bal_train = 10
 bal_test = 10
+
+model_name = "train_tumor_InputCascadeCNN"
 
 img_types = ["flair","anatomica", "FA"]
 
@@ -89,15 +91,15 @@ print("Output shape of 1st convolution:", local_conv1.get_shape())
 local_relu1 = Activation('relu')(local_conv1)
 print("Output shape of relu:", local_relu1.get_shape())
 local_maxpool1 = MaxPooling2D(pool_size=pool_size,strides=(1,1))(local_relu1)
-local_dropout1 = Dropout(0.25)(local_maxpool1)
-print("Output shape of max pooling:", local_dropout1.get_shape())
+#local_dropout1 = Dropout(0.25)(local_maxpool1)
+print("Output shape of max pooling:", local_maxpool1.get_shape())
 
 kernel_size = (3,3)
 nb_filters = 64
 pool_size = (2,2)
 local_conv2 = Convolution2D(nb_filters, kernel_size[0], kernel_size[1],
                         border_mode='valid',
-                        input_shape=input_shape)(local_dropout1)
+                        input_shape=input_shape)(local_maxpool1)
 print("Output shape of 2nd convolution:", local_conv2.get_shape())
 local_relu2 = Activation('relu')(local_conv2)
 print("Output shape of 2nd relu:", local_relu2.get_shape())
@@ -199,7 +201,7 @@ for i in range(len(brains)/4):
 	y_test = X_test_x[1]
 	X_test_x = X_test_x[0]
 
-	X_test_bigger =tr.getData(img_types, "2dy", inp_dim_bigger)[0][0]	
+	X_test_bigger =tt.getData(img_types, "2dy", inp_dim_bigger)[0][0]	
 
 	score = evaluate(model,[X_test_bigger, X_test_x],y_test)
 	res.append((score,train_brain, test_brain))
