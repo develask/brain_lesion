@@ -1,6 +1,8 @@
 import numpy as np
 import nibabel as nib
 
+import sys
+
 pred = sys.argv[2]
 
 mask = nib.load("../data/standars/MNI152_T1_1mm_first_brain_mask.nii.gz").get_data()>0
@@ -16,7 +18,7 @@ TN = np.sum(mask * (1 - original) * (1 - predicted))
 N = np.sum(mask * (1 - original))
 
 
-print("TPR:", TP/P)
-print("TNR:", TN/N)
+print("TPR:", float(TP)/P)
+print("TNR:", float(TN)/N)
 print("Total positives:", P)
 print("Total negatives:", N)

@@ -5,16 +5,17 @@ import numpy as np
 import math
 import brain as br
 
-
-model = load_model(modelo_file)
+import sys
 
 brain_id = sys.argv[1]
 #"tka007" #1
 # "tka015" #2
 # tka018 #3
 # tka021 #x
-modelo_file = "../models/model_paralel_v1_batches2_0.mdl"
-result_path = "../results/"+brain_id+"_paralel_v1_batches2_0.nii.gz"
+modelo_file = "../models/model_paralel_v1_batches3_0.mdl"
+result_path = "../results/"+brain_id+"_paralel_v1_batches3_0.nii.gz"
+
+model = load_model(modelo_file)
 
 inp_dim_2d = 35
 inp_dim_3d = 11
@@ -28,8 +29,8 @@ inicio = 0
 fin = int(final*0.01)
 step = fin
 np.random.shuffle(brain.result)
-print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
-#print(fin*100/float(final),"%                 ",fin," / ", final)
+#print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
+print(fin*100/float(final),"%                 ",fin," / ", final)
 new_im = np.zeros(brain.mask.shape)
 while True:
 	brain.train = brain.result[inicio:fin]
@@ -50,8 +51,8 @@ while True:
 	), axis=1)
 	for a in brain.train:
 		new_im[a[0],a[1],a[2]] = a[4]
-	print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
-	#print(fin*100/float(final),"%                 ",fin," / ", final)
+	#print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
+	print(fin*100/float(final),"%                 ",fin," / ", final)
 	inicio += step
 	fin += step
 	if fin>final:
