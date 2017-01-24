@@ -226,7 +226,8 @@ for i in range(int(len(brains)/4)):
 		# test_brain = brains[i*4:(i+1)*4]
 		train_brain = ["tka002","tka003","tka004","tka005","tka006","tka009","tka010","tka011","tka012","tka013","tka016","tka017","tka019","tka020"]
 		test_brain = ["tka007","tka015","tka018","tka021"]
-
+		tr.reset()
+		tr.init(train_brain)
 		
 		cv.reset()
 		cv.init(train_brain)
@@ -245,7 +246,6 @@ for i in range(int(len(brains)/4)):
 
 		ler = init_ler
 		for j in range(nb_epoch):
-			tr_h = None
 			print("Starting epoch:", j+1, "/", nb_epoch)
 			print("Genrating new training data")
 			# j = 0
@@ -255,8 +255,6 @@ for i in range(int(len(brains)/4)):
 			# 	except Exception as e:
 			# 		print(e)
 			# 		break
-			tr.reset()
-			tr.init(train_brain)
 			tr.createSlices(step=step)
 			tr.balance(bal_train)
 			tr.split(1)

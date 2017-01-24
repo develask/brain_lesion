@@ -1,7 +1,7 @@
 import brain as br
 import numpy as np
 import sys
-from psutil import virtual_memory
+#from psutil import virtual_memory
 
 class ImageManager():
 	def __init__(self):
@@ -83,25 +83,25 @@ class ImageManager():
 		test_y = np.concatenate((tmp, tmp2), axis=1)
 		return([(train_x,train_y),(test_x,test_y)])
 
-	def memoryAvailable(self, img_types, sample_type, dim, p = True):
-		size = 0
-		size_t = sys.getsizeof(np.array([0.5]))
-		for cr in self.images:
-			size += cr.train.shape[0] + cr.test.shape[0]
-		size *= dim
-		size *= dim
-		size *= len(img_types)
-		size *= size_t
+	# def memoryAvailable(self, img_types, sample_type, dim, p = True):
+	# 	size = 0
+	# 	size_t = sys.getsizeof(np.array([0.5]))
+	# 	for cr in self.images:
+	# 		size += cr.train.shape[0] + cr.test.shape[0]
+	# 	size *= dim
+	# 	size *= dim
+	# 	size *= len(img_types)
+	# 	size *= size_t
 
-		max_ram = 2 * 1024 * 1024 * 1024# 2GB ram
-		mem = virtual_memory()
-		mem = mem.total - max_ram
-		self.mem += size
-		if p:
-			print("Needed Memory:", self.mem/(1024**3))
-			print("Avilable Memory:", mem/(1024**3))
-		if self.mem>mem:
-			raise Exception("Need more memory: (", self.mem,"/",mem,")")
+	# 	max_ram = 2 * 1024 * 1024 * 1024# 2GB ram
+	# 	mem = virtual_memory()
+	# 	mem = mem.total - max_ram
+	# 	self.mem += size
+	# 	if p:
+	# 		print("Needed Memory:", self.mem/(1024**3))
+	# 		print("Avilable Memory:", mem/(1024**3))
+	# 	if self.mem>mem:
+	# 		raise Exception("Need more memory: (", self.mem,"/",mem,")")
 
 
 
