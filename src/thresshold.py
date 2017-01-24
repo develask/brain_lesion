@@ -8,6 +8,6 @@ image_r = sys.argv[2]
 t = sys.argv[3]
 
 i = nib.load(image).get_data()
-i = i >= float(t)
+i = int(i >= float(t))
 new_image = nib.Nifti1Image(i,  np.eye(4))
 nib.save(new_image, image_r)
