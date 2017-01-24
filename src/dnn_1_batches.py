@@ -49,7 +49,7 @@ inp_dim_2d = 35
 inp_dim_3d = 11
 step = 11
 
-init_ler = 0.05
+init_ler = 0.005
 final_ler = 0.005
 dec = (final_ler/init_ler)**(1/nb_epoch)
 
@@ -65,7 +65,7 @@ kernel_size_2d = (3, 3)
 kernel_size_3d = (3, 3, 3)
 
 #balance proportion
-bal_train = 10
+bal_train = 30
 bal_test = 200
 
 # exp1
@@ -195,7 +195,6 @@ brains = ["tka002","tka003","tka004","tka005","tka006","tka007","tka009","tka010
 
 
 tr = imm.ImageManager() # load training data
-cv = imm.ImageManager() # load training data
 res = []
 def evaluate(model,X_test,y_test):
 	y_pred = model.predict(X_test)
@@ -225,22 +224,10 @@ for i in range(int(len(brains)/4)):
 		# train_brain = brains[:i*4]+brains[(i+1)*4:]
 		# test_brain = brains[i*4:(i+1)*4]
 		train_brain = ["tka002","tka003","tka004","tka005","tka006","tka009","tka010","tka011","tka012","tka013","tka016","tka017","tka019","tka020"]
+		val_brain = []
 		test_brain = ["tka007","tka015","tka018","tka021"]
 		tr.reset()
 		tr.init(train_brain)
-		
-		cv.reset()
-		cv.init(train_brain)
-		cv.createSlices(step=step)
-		cv.balance(bal_train)
-		cv.split(1)
-
-		X_cv_x = cv.getData(img_types, "2dx", inp_dim_2d)[0]
-		y_cv = X_cv_x[1]
-		X_cv_x = X_cv_x[0]
-		X_cv_y = cv.getData(img_types, "2dy", inp_dim_2d)[0][0]
-		X_cv_z = cv.getData(img_types, "2dz", inp_dim_2d)[0][0]
-		X_cv_3d = cv.getData(img_types, "3d", inp_dim_3d)[0][0]
 
 
 
@@ -270,10 +257,8 @@ for i in range(int(len(brains)/4)):
 		              			optimizer=sgd,
 		              				metrics=['accuracy'])
 			tr_h = final_model.fit([X_train_x,X_train_y, X_train_z, X_train_3d], y_train, batch_size=batch_size, nb_epoch=1,verbose=2)
-			cv_h = final_model.evaluate([X_cv_x, X_cv_y, X_cv_z, X_cv_3d],y_cv)
 			print("train_loss", tr_h.history["loss"][0])
-			print("validation_loss", cv_h[0])
-			cv_history.append((tr_h.history["loss"][0], cv_h[0]))
+			cv_history.append(tr_h.history["loss"][0])
 			ler *= dec
 
 		final_model.save("../models/model_" + model_name +"_"+ str(i) + ".mdl")
@@ -283,7 +268,6 @@ for i in range(int(len(brains)/4)):
 
 		#model = load_model("../models/model_0.mdl")
 		tr.reset()
-		cv.reset()
 		### test stuff
 
 		tt = imm.ImageManager() # load training data
