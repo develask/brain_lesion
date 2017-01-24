@@ -222,8 +222,10 @@ cv_history = []
 for i in range(int(len(brains)/4)):
 	
 	for it in range(nb_rep):
-		train_brain = brains[:i*4]+brains[(i+1)*4:]
-		test_brain = brains[i*4:(i+1)*4]
+		# train_brain = brains[:i*4]+brains[(i+1)*4:]
+		# test_brain = brains[i*4:(i+1)*4]
+		train_brain = ["tka002","tka003","tka004","tka005","tka006","tka009","tka010","tka011","tka012","tka013","tka016","tka017","tka019","tka020"]
+		test_brain = ["tka007","tka015","tka018","tka021"]
 
 		
 		cv.reset()
@@ -338,7 +340,7 @@ for i in range(int(len(brains)/4)):
 	print("Accuracy:", TP+TN)
 	print("TPR:", TP / float(TP + FN))
 	print("TNR:", TN / float(TN + FP))
-
+	break
 
 print("")
 print("########################################")
