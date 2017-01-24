@@ -8,12 +8,13 @@ import brain as br
 
 model = load_model(modelo_file)
 
-brain_id = "tka007" #1
+brain_id = sys.argv[1]
+#"tka007" #1
 # "tka015" #2
 # tka018 #3
 # tka021 #x
-modelo_file = "../models/model_paralel_v1_batches_0.mdl"
-result_path = "../results/"+brain_id+"_paralel_v1_batches_0.nii.gz"
+modelo_file = "../models/model_paralel_v1_batches2_0.mdl"
+result_path = "../results/"+brain_id+"_paralel_v1_batches2_0.nii.gz"
 
 inp_dim_2d = 35
 inp_dim_3d = 11
