@@ -16,12 +16,12 @@ from keras.models import load_model
 
 
 from keras.datasets import mnist
-from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers import Dense, Dropout, Activation, Flatten, Input, InputLayer
 from keras.layers import Convolution2D, MaxPooling2D, Convolution3D, MaxPooling3D
-from keras.layers import Merge
+from keras.layers import Merge, merge
 from keras.utils import np_utils
 
-from keras.models import model_from_json
+from keras.models import model_from_json, Model
 from keras import backend as K
 
 
@@ -43,11 +43,11 @@ model_name	= "canadian_style"
 
 batch_size = 128
 nb_classes = 2
-nb_epoch = 500 
+nb_epoch = 350
 # input image dimensions
 inp_dim = 33
 inp_dim_bigger = 65
-step = 9
+step = 7
 
 init_ler = 0.05
 final_ler = 0.005
@@ -69,7 +69,7 @@ bal_test = 200
 # exp1
 img_types = ["flair","FA","anatomica"]
 
-
+input_shape = (inp_dim, inp_dim, len(img_types))
 # Bigger path
 input_shape_bigger = (inp_dim_bigger, inp_dim_bigger, len(img_types))
 
@@ -141,7 +141,7 @@ output = merged_softmax1
 print("Output shape after softmax (2 classes):", merged_softmax1.get_shape())
 
 model = Model(input=[big_window_input, small_window_input], output=output)
-
+final_model = model
 #train_data partition
 brains = ["tka002","tka003","tka004","tka005","tka006","tka007","tka009","tka010","tka011","tka012","tka013","tka015","tka016","tka017","tka018","tka019","tka020","tka021"]
 
@@ -187,10 +187,10 @@ for i in range(int(len(brains)/4)):
 		v.createSlices(step=step+2)
 		v.balance(bal_test)
 		v.split(1)
-		X_val_x = tr.getData(img_types, "2dy", inp_dim)[0]
+		X_val_x = v.getData(img_types, "2dy", inp_dim)[0]
 		y_val = X_val_x[1]
 		X_val_x = X_val_x[0]
-		X_val_bigger =tr.getData(img_types, "2dy", inp_dim_bigger)[0][0]
+		X_val_bigger = v.getData(img_types, "2dy", inp_dim_bigger)[0][0]
 
 
 		ler = init_ler
@@ -249,10 +249,10 @@ for i in range(int(len(brains)/4)):
 		tt.createSlices(step=step+1)
 		tt.balance(bal_test)
 		tt.split(1) # we will select the hole brain
-		X_test_x = tr.getData(img_types, "2dy", inp_dim)[0]
+		X_test_x = tt.getData(img_types, "2dy", inp_dim)[0]
 		y_test = X_test_x[1]
 		X_test_x = X_test_x[0]
-		X_test_bigger =tr.getData(img_types, "2dy", inp_dim_bigger)[0][0]
+		X_test_bigger =tt.getData(img_types, "2dy", inp_dim_bigger)[0][0]
 
 		score = evaluate(final_model,[X_test_bigger, X_test_x],y_test)
 		res.append((score,train_brain, test_brain))
