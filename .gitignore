@@ -1,4 +1,5 @@
 /models
+/results
 /data
 /src/__pycache__
 *.pyc
