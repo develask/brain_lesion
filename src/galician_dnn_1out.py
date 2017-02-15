@@ -44,11 +44,11 @@ model_name	= "galician_DNN_v1"
 
 batch_size = 128
 nb_classes = 1
-nb_epoch = 2 #250
+nb_epoch = 250
 # input image dimensions
 inp_dim_2d = 35
 inp_dim_3d = 11
-step = 19 #9
+step = 9
 
 init_ler = 0.05
 final_ler = 0.005

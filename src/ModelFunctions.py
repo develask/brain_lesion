@@ -63,7 +63,7 @@ class Model():
 		self.model_name = model_name
 		self.model = model
 		self.getDataFunc = getDataFunc
-		self.brains = ["tka002","tka003","tka004","tka005","tka006","tka007","tka009","tka010","tka011","tka012","tka013","tka015","tka016","tka017","tka018","tka019","tka020","tka021"]
+		self.brains = ["tka003","tka004","tka005","tka006","tka007","tka009","tka010","tka011","tka012","tka013","tka015","tka016","tka017","tka018","tka019","tka020","tka021","tka002"]
 
 
 	def leaveOneOut(self, nb_epoch = 250, batch_size = 128, init_ler = 0.05, final_ler = 0.005):
@@ -98,6 +98,8 @@ class Model():
 			self.model.save("../models/model_" + self.model_name +"_for_"+ test[0] + ".mdl")
 			with open("../models/hist_"+ self.model_name +"_for_"+ test[0] +".json","w") as tf:
 				tf.write(json.dumps(cv_history))
+			break		
+
 
 class DataManager():
 	def __init__(self, datafunc):
