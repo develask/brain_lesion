@@ -43,7 +43,7 @@ model_name	= "galician_DNN_v1"
 
 
 batch_size = 128
-nb_classes = 2
+nb_classes = 1
 nb_epoch = 2 #250
 # input image dimensions
 inp_dim_2d = 35
@@ -183,8 +183,8 @@ final_model.add(Dense(128))
 final_model.add(Activation('relu'))
 print("Output shape after dully connected:", final_model.output_shape)
 final_model.add(Dense(nb_classes))
-final_model.add(Activation('softmax'))
-print("Output shape after softmax (2 classes):", final_model.output_shape)
+final_model.add(Activation('sigmoid'))
+print("Output shape after sigmoid (1 class):", final_model.output_shape)
 
 
 def getData(tr):
@@ -192,7 +192,8 @@ def getData(tr):
 	tr.balance(bal_train)
 	tr.split(1)
 	X_train_x = tr.getData(img_types, "2dx", inp_dim_2d)[0]
-	y_train = X_train_x[1]
+	y_train = X_train_x[1][:,1]
+	print("y_train:", y_train.shape)
 	X_train_x = X_train_x[0]
 	X_train_y = tr.getData(img_types, "2dy", inp_dim_2d)[0][0]
 	X_train_z = tr.getData(img_types, "2dz", inp_dim_2d)[0][0]

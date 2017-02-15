@@ -1,3 +1,38 @@
+from __future__ import print_function
+
+from keras.datasets import mnist
+
+from keras.models import Sequential
+from keras.layers import Dense, Activation
+
+import numpy as np
+from keras.utils.np_utils import to_categorical
+
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Activation
+from keras.optimizers import SGD
+
+from keras.models import load_model
+
+
+from keras.datasets import mnist
+from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers import Convolution2D, MaxPooling2D, Convolution3D, MaxPooling3D
+from keras.layers import Merge
+from keras.utils import np_utils
+
+from keras.models import model_from_json
+from keras import backend as K
+
+
+import random as rdm
+import nibabel as nib
+import image_manager as imm
+import gc
+
+import tensorflow as tf
+import json
+
 res = []
 def evaluate(model,X_test,y_test):
 	y_pred = model.predict(X_test)
@@ -39,7 +74,7 @@ class Model():
 		for i in range(len(self.brains)):
 			test = [self.brains[i]]
 			train = self.brains[0:i] + self.brains[i+1:len(self.brains)]
-
+			print("Starting cv number", i, "out of", len(self.brains))
 			traindata.setTrain(train)
 
 			cv_history = []
@@ -61,7 +96,7 @@ class Model():
 				ler *= dec
 
 			self.model.save("../models/model_" + self.model_name +"_for_"+ test[0] + ".mdl")
-			with open("hist_"+ self.model_name +"_for_"+ test[0] +".json","w") as tf:
+			with open("../models/hist_"+ self.model_name +"_for_"+ test[0] +".json","w") as tf:
 				tf.write(json.dumps(cv_history))
 
 class DataManager():
