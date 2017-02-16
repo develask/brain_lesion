@@ -29,6 +29,7 @@ import random as rdm
 import nibabel as nib
 import image_manager as imm
 import gc
+import time
 
 import tensorflow as tf
 import json
@@ -80,6 +81,7 @@ class Model():
 			cv_history = []
 
 			ler = init_ler
+			start_time = time.time()
 			for j in range(nb_epoch):
 				print("Starting epoch:", j+1, "/", nb_epoch)
 				print("Genrating new training data")
@@ -94,7 +96,10 @@ class Model():
 				print("train_loss", tr_h.history["loss"][0])
 				cv_history.append(tr_h.history["loss"][0])
 				ler *= dec
-
+			elapsed_time = time.time() - start_time
+			print("#################################################")
+			print("\tTime training (",i,"):", elapsed_time)
+			print("#################################################")
 			self.model.save("../models/model_" + self.model_name +"_for_"+ test[0] + ".mdl")
 			with open("../models/hist_"+ self.model_name +"_for_"+ test[0] +".json","w") as tf:
 				tf.write(json.dumps(cv_history))
