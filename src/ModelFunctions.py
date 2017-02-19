@@ -82,7 +82,7 @@ class Model():
 			break
 		self.traindata = None
 	def run(self, train, nb_epoch = 250, batch_size = 128, init_ler = 0.05, final_ler = 0.005):
-		hasdata = self.traindata != None
+		hasdata = self.traindata == None
 		if hasdata:
 			self.traindata = DataManager(self.getDataFunc)
 			self.traindata.setTrain(train)
