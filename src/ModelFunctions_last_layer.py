@@ -103,7 +103,7 @@ class Model():
 			self.model.save("../models/model_" + self.model_name +"_for_"+ test[0] + ".mdl")
 			with open("../models/hist_"+ self.model_name +"_for_"+ test[0] +".json","w") as tf:
 				tf.write(json.dumps(cv_history))
-			break
+			break		
 
 
 class DataManager():

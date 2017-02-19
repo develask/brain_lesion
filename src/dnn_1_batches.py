@@ -36,7 +36,7 @@ import json
 
 #############################################
 
-model_name	= "galician_DNN_v1"
+model_name	= "galician_DNN_softmax_v1"
 
 #### default: takes 3 imag types -> less context so as the input size of 
  ### the NN is equal, and the comparison is fair

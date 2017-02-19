@@ -36,7 +36,7 @@ import json
 
 #############################################
 
-model_name	= "galician_DNN_v1"
+model_name	= "galician_DNN_sigmoid_v1"
 
 #### default: takes 3 imag types -> less context so as the input size of 
  ### the NN is equal, and the comparison is fair
@@ -48,7 +48,7 @@ nb_epoch = 250
 # input image dimensions
 inp_dim_2d = 35
 inp_dim_3d = 11
-step = 9
+step = 19 #9
 
 init_ler = 0.05
 final_ler = 0.005
