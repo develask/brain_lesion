@@ -1,0 +1,9 @@
+python3 lunes_desvalanceo_variable_10_50_lin.py polish_test_with_tka0018
+
+python3 lunes_desvalanceo_variable_10_50_log.py polish_test_with_tka0018
+
+python3 lunes_desvalanceo_variable_10_50_log_lin.py polish_test_with_tka0018
+
+python3 lunes_desvalanceo_variable_20_40_lin.py polish_test_with_tka0018
+
+python3 lunes_desvalanceo_variable_20_40_lin.py polish_test_with_tka0018

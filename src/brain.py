@@ -86,7 +86,7 @@ class Brain():
 				for x in self.test:
 					test_X[i,:,:] = margin[x[0]+mar-1,x[1]:x[1]+dim,x[2]:x[2]+dim]
 					i+=1
-			if sample_type == "2dy":
+			elif sample_type == "2dy":
 				train_X = np.empty((self.train.shape[0], dim, dim))
 				i = 0
 				for x in self.train:
@@ -97,7 +97,7 @@ class Brain():
 				for x in self.test:
 					test_X[i,:,:] = margin[x[1]:x[1]+dim,x[0]+mar-1,x[2]:x[2]+dim]
 					i+=1
-			if sample_type == "2dz":
+			elif sample_type == "2dz":
 				train_X = np.empty((self.train.shape[0], dim, dim))
 				i = 0
 				for x in self.train:
@@ -108,7 +108,7 @@ class Brain():
 				for x in self.test:
 					test_X[i,:,:] = margin[x[1]:x[1]+dim,x[2]:x[2]+dim,x[0]+mar-1]
 					i+=1
-			if sample_type == "3d":
+			elif sample_type == "3d":
 				train_X = np.empty((self.train.shape[0], dim, dim, dim))
 				i = 0
 				for x in self.train:

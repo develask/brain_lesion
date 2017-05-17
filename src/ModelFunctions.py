@@ -64,56 +64,49 @@ class Model():
 		self.model_name = model_name
 		self.model = model
 		self.getDataFunc = getDataFunc
-		self.traindata = None
 		self.brains = ["tka003","tka004","tka005","tka006","tka007","tka009","tka010","tka011","tka012","tka013","tka015","tka016","tka017","tka018","tka019","tka020","tka021","tka002"]
 
 
-	def leaveOneOut(self, nb_epoch = 250, batch_size = 128, init_ler = 0.05, final_ler = 0.005):
+	def leaveOneOut(self, nb_epoch = 250, batch_size = 128, init_ler = 0.05, final_ler = 0.005, brain = "tka002"):
 		dec = (final_ler/init_ler)**(1/nb_epoch)
 
-		self.traindata = DataManager(self.getDataFunc)
+		traindata = DataManager(self.getDataFunc)
 
 		for i in range(len(self.brains)):
 			test = [self.brains[i]]
 			train = self.brains[0:i] + self.brains[i+1:len(self.brains)]
-			print("Starting cv number", i, "out of", len(self.brains))
-			self.traindata.setTrain(train)
-			self.run(train, nb_epoch = nb_epoch, batch_size = batch_size, init_ler = init_ler, final_ler = final_ler)
-			break
-		self.traindata = None
-	def run(self, train, nb_epoch = 250, batch_size = 128, init_ler = 0.05, final_ler = 0.005):
-		hasdata = self.traindata == None
-		if hasdata:
-			self.traindata = DataManager(self.getDataFunc)
-			self.traindata.setTrain(train)
-		cv_history = []
+			if (brain != test[0]):
+				continue
+			print(train)
+			print("Starting cv number", i, " - ", test[0], "out of", len(self.brains))
+			traindata.setTrain(train)
 
-		ler = init_ler
-		start_time = time.time()
-		for j in range(nb_epoch):
-			print("Starting epoch:", j+1, "/", nb_epoch)
-			print("Genrating new training data")
+			cv_history = []
 
-			d = self.traindata.getData()
+			ler = init_ler
+			start_time = time.time()
+			for j in range(nb_epoch):
+				print("Starting epoch:", j+1, "/", nb_epoch)
+				print("Genrating new training data")
+				
+				d = traindata.getData()
 
-			sgd = SGD(lr=ler,decay=0,momentum=0.0,nesterov = False)
-			self.model.compile(loss='binary_crossentropy',
-						optimizer=sgd,
-							metrics=['accuracy'])
-			tr_h = self.model.fit(d[0], d[1], batch_size=batch_size, nb_epoch=1,verbose=2)
-			print("train_loss", tr_h.history["loss"][0])
-			cv_history.append(tr_h.history["loss"][0])
-			ler *= dec
-		elapsed_time = time.time() - start_time
-		print("#################################################")
-		print("\tTime training (",i,"):", elapsed_time)
-		print("#################################################")
-		self.model.save("../models/model_" + self.model_name +"_for_"+ test[0] + ".mdl")
-		with open("../models/hist_"+ self.model_name +"_for_"+ test[0] +".json","w") as tf:
-			tf.write(json.dumps(cv_history))
-		if hasdata:
-			self.traindata = None
-		return self.model
+				sgd = SGD(lr=ler,decay=0,momentum=0.0,nesterov = False)
+				self.model.compile(loss='binary_crossentropy',
+			              			optimizer=sgd,
+			              				metrics=['accuracy'])
+				tr_h = self.model.fit(d[0], d[1], batch_size=batch_size, nb_epoch=1,verbose=2)
+				print("train_loss", tr_h.history["loss"][0])
+				cv_history.append(tr_h.history["loss"][0])
+				ler *= dec
+			elapsed_time = time.time() - start_time
+			print("#################################################")
+			print("\tTime training (",i,"):", elapsed_time)
+			print("#################################################")
+			self.model.save("../models/model_" + self.model_name +"_for_"+ test[0] + ".mdl")
+			with open("../models/hist_"+ self.model_name +"_for_"+ test[0] +".json","w") as tf:
+				tf.write(json.dumps(cv_history))
+
 
 class DataManager():
 	def __init__(self, datafunc):

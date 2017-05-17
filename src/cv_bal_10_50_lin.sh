@@ -1,0 +1,35 @@
+#python lunes_desvalanceo_variable_10_50_lin.py tka002
+
+#python lunes_desvalanceo_variable_10_50_lin.py tka003
+
+#python lunes_desvalanceo_variable_10_50_lin.py tka004
+
+#python lunes_desvalanceo_variable_10_50_lin.py tka005
+
+#python lunes_desvalanceo_variable_10_50_lin.py tka006
+
+#python lunes_desvalanceo_variable_10_50_lin.py tka007
+
+python lunes_desvalanceo_variable_10_50_lin.py tka009
+
+python lunes_desvalanceo_variable_10_50_lin.py tka010
+
+python lunes_desvalanceo_variable_10_50_lin.py tka011
+
+python lunes_desvalanceo_variable_10_50_lin.py tka012
+
+python lunes_desvalanceo_variable_10_50_lin.py tka013
+
+python lunes_desvalanceo_variable_10_50_lin.py tka015
+
+python lunes_desvalanceo_variable_10_50_lin.py tka016
+
+python lunes_desvalanceo_variable_10_50_lin.py tka017
+
+python lunes_desvalanceo_variable_10_50_lin.py tka018
+
+python lunes_desvalanceo_variable_10_50_lin.py tka019
+
+python lunes_desvalanceo_variable_10_50_lin.py tka020
+
+python lunes_desvalanceo_variable_10_50_lin.py tka021

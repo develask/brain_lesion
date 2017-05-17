@@ -7,15 +7,18 @@ import brain as br
 
 import sys
 
-brain_id = sys.argv[1]
+brain_id = sys.argv[2]
 #"tka007" #1
 # "tka015" #2
 # tka018 #3
 # tka021 #x
-modelo_file = "../models/model_paralel_v1_batches3_0.mdl"
-result_path = "../results/"+brain_id+"_paralel_v1_batches3_0.nii.gz"
+modelo_file = sys.argv[1]
 
 model = load_model(modelo_file)
+
+nombre = modelo_file.split("/")[-1].split(".")[0]
+
+result_path = "../results/"+brain_id+"_with_"+nombre+".nii.gz"
 
 inp_dim_2d = 35
 inp_dim_3d = 11
@@ -31,7 +34,7 @@ step = fin
 np.random.shuffle(brain.result)
 #print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
 print(fin*100/float(final),"%                 ",fin," / ", final)
-new_im = np.zeros(brain.mask.shape)
+new_im = np.zeros(brain.mask.shape, dtype="float32")
 while True:
 	brain.train = brain.result[inicio:fin]
 	brain.test = brain.result[0:0]
@@ -44,13 +47,16 @@ while True:
 	x_3d = brain.getData(img_types, "3d", inp_dim_3d)[0][0]
 	y_real = total[0][1]
 	y_pred = model.predict([x_x,x_y,x_z,x_3d])
+
+	print(y_pred)
 	y_pred = y_pred[:,1]
+	print(np.mean(y_pred), np.max(y_pred))
 	brain.train = np.concatenate((
 		brain.train,
 		y_pred[:, np.newaxis]
 	), axis=1)
 	for a in brain.train:
-		new_im[a[0],a[1],a[2]] = a[4]
+		new_im[int(a[0]),int(a[1]),int(a[2])] = a[4]
 	#print(fin*100/float(final),"%                 ",fin," / ", final, end="\r", flush=True)
 	print(fin*100/float(final),"%                 ",fin," / ", final)
 	inicio += step

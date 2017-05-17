@@ -1,0 +1,2 @@
+python domingo_momentum_nesterov.py
+python domingo_momentum_300_epocas.py

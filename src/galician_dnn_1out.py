@@ -34,9 +34,13 @@ import ModelFunctions as MF
 import tensorflow as tf
 import json
 
+import sys
+
+brain_id = sys.argv[1]
+
 #############################################
 
-model_name	= "galician_DNN_sigmoid_v1"
+model_name	= "galician_DNN_sigmoid_v1_bal" + sys.argv[2]
 
 #### default: takes 3 imag types -> less context so as the input size of 
  ### the NN is equal, and the comparison is fair
@@ -48,7 +52,7 @@ nb_epoch = 250
 # input image dimensions
 inp_dim_2d = 35
 inp_dim_3d = 11
-step = 19 #9
+step = 9
 
 init_ler = 0.05
 final_ler = 0.005
@@ -66,7 +70,7 @@ kernel_size_2d = (3, 3)
 kernel_size_3d = (3, 3, 3)
 
 #balance proportion
-bal_train = 30
+bal_train = int(sys.argv[2])
 bal_test = 200
 
 # exp1
@@ -203,5 +207,5 @@ def getData(tr):
 
 
 m = MF.Model(model_name, final_model, getData)
-m.leaveOneOut(nb_epoch, batch_size, init_ler, final_ler)
+m.leaveOneOut(nb_epoch, batch_size, init_ler, final_ler,brain_id)
 
